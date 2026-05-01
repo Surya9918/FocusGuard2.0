@@ -1,0 +1,709 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3    FocusGuard — AndroidManifest.xml
+4    ══════════════════════════════════════════════════════════════════════════
+5    Permission Audit & Justification:
+6    ══════════════════════════════════════════════════════════════════════════
+7
+8    PACKAGE_USAGE_STATS
+9      ↳ Special permission — user must grant via Settings > Digital Wellbeing
+10        or Settings > Apps > Special App Access > Usage Access.
+11      ↳ Required to read which app is currently active via UsageStatsManager.
+12      ↳ Cannot be granted via runtime dialog. Must deep-link to settings screen.
+13
+14    SYSTEM_ALERT_WINDOW (Display over other apps)
+15      ↳ Special permission — user grants via Settings > Apps > Special Access.
+16      ↳ Required for BlockScreenActivity to overlay on top of any app.
+17      ↳ On Android 12+, this permission has been tightened. The overlay window
+18        must use TYPE_APPLICATION_OVERLAY (not deprecated TYPE_PHONE/SYSTEM).
+19
+20    FOREGROUND_SERVICE + FOREGROUND_SERVICE_SPECIAL_USE
+21      ↳ FOREGROUND_SERVICE: Allows the FocusTrackerService to run persistently
+22        in the foreground with a persistent notification (Android 9+ requirement).
+23      ↳ FOREGROUND_SERVICE_SPECIAL_USE: Required on Android 14+ for any foreground
+24        service not covered by a specific type. Declared here as a fallback.
+25      ↳ Note: We also declare FOREGROUND_SERVICE_DATA_SYNC as the service performs
+26        continuous data monitoring — this aligns with Play Store policy.
+27
+28    POST_NOTIFICATIONS
+29      ↳ Runtime permission required on Android 13+ (API 33+).
+30      ↳ Required to show the persistent "FocusGuard is active" notification
+31        that all foreground services must display.
+32      ↳ Requested at runtime during onboarding.
+33
+34    RECEIVE_BOOT_COMPLETED
+35      ↳ Normal permission — auto-granted, no user interaction needed.
+36      ↳ Allows FocusGuard to restart the tracking service after device reboot.
+37      ↳ Critical for uninterrupted wellbeing tracking.
+38
+39    REQUEST_INSTALL_PACKAGES
+40      ↳ NOT included intentionally — FocusGuard never installs packages.
+41        Including unnecessary permissions reduces user trust and Play Store risk.
+42    ══════════════════════════════════════════════════════════════════════════
+43-->
+44<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+45    package="com.focusguard.app.debug"
+46    android:versionCode="1"
+47    android:versionName="1.0.0" >
+48
+49    <uses-sdk
+50        android:minSdkVersion="26"
+51        android:targetSdkVersion="34" />
+52
+53    <!--
+54         ══════════════════════════════════════════════════════════════════════
+55         PERMISSIONS
+56         ══════════════════════════════════════════════════════════════════════
+57    -->
+58
+59
+60    <!--
+61        USAGE STATS ACCESS — The core permission of this entire app.
+62        This is a "privileged" permission that requires manual user grant.
+63        It is NOT a dangerous permission (no runtime dialog).
+64        We guide the user to the system settings page during onboarding.
+65    -->
+66    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+66-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:58:5-59:47
+66-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:58:22-75
+67
+68    <!--
+69        DRAW OVER OTHER APPS — Required for the blocking overlay.
+70        Android docs call this "SYSTEM_ALERT_WINDOW".
+71        Required for BlockScreenActivity to appear over the distraction app.
+72        User grants this manually: Settings → Apps → FocusGuard → Draw over apps
+73    -->
+74    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+74-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:67:5-78
+74-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:67:22-75
+75
+76    <!--
+77        FOREGROUND SERVICE — Required for FocusTrackerService to run persistently.
+78        Without this, Android will kill our tracking service in the background.
+79    -->
+80    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+80-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:73:5-77
+80-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:73:22-74
+81    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+81-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:74:5-87
+81-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:74:22-84
+82    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+82-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:75:5-89
+82-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:75:22-86
+83
+84    <!--
+85        POST NOTIFICATIONS — Runtime permission for Android 13+.
+86        Required to show the persistent "FocusGuard Active" foreground notification.
+87        Without this notification, the foreground service cannot run on Android 13+.
+88    -->
+89    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+89-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:82:5-77
+89-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:82:22-74
+90
+91    <!--
+92        BOOT COMPLETED — Auto-granted normal permission.
+93        Allows BootReceiver to restart FocusTrackerService after device reboot.
+94    -->
+95    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+95-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:88:5-81
+95-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:88:22-78
+96
+97    <!--
+98        VIBRATE — For gentle haptic feedback when the block screen appears.
+99        Normal permission, auto-granted.
+100    -->
+101    <uses-permission android:name="android.permission.VIBRATE" />
+101-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:94:5-66
+101-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:94:22-63
+102
+103    <!--
+104        WAKE LOCK — Prevents CPU from sleeping while we calculate usage stats.
+105        Used briefly inside FocusTrackerService during ML inference only.
+106    -->
+107    <uses-permission android:name="android.permission.WAKE_LOCK" />
+107-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:100:5-68
+107-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:100:22-65
+108
+109    <queries>
+109-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:102:5-107:15
+110        <intent>
+110-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:103:9-106:18
+111            <action android:name="android.intent.action.MAIN" />
+111-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:104:13-65
+111-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:104:21-62
+112
+113            <category android:name="android.intent.category.LAUNCHER" />
+113-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:105:13-73
+113-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:105:23-70
+114        </intent>
+115    </queries>
+116
+117    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+117-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:24:5-79
+117-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:24:22-76
+118
+119    <permission
+119-->[androidx.core:core:1.13.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\da90a72d88b11557ed5671b4a81f6586\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+120        android:name="com.focusguard.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+120-->[androidx.core:core:1.13.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\da90a72d88b11557ed5671b4a81f6586\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+121        android:protectionLevel="signature" />
+121-->[androidx.core:core:1.13.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\da90a72d88b11557ed5671b4a81f6586\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+122
+123    <uses-permission android:name="com.focusguard.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+123-->[androidx.core:core:1.13.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\da90a72d88b11557ed5671b4a81f6586\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+123-->[androidx.core:core:1.13.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\da90a72d88b11557ed5671b4a81f6586\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+124    <!--
+125 ══════════════════════════════════════════════════════════════════════
+126         APPLICATION
+127         ══════════════════════════════════════════════════════════════════════
+128    -->
+129    <application
+129-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:112:5-299:19
+130        android:name="com.focusguard.app.FocusGuardApp"
+130-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:113:9-38
+131        android:allowBackup="true"
+131-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:114:9-35
+132        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+132-->[androidx.core:core:1.13.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\da90a72d88b11557ed5671b4a81f6586\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+133        android:dataExtractionRules="@xml/data_extraction_rules"
+133-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:115:9-65
+134        android:debuggable="true"
+135        android:enableOnBackInvokedCallback="true"
+135-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:123:9-51
+136        android:extractNativeLibs="true"
+136-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:122:9-41
+137        android:fullBackupContent="@xml/backup_rules"
+137-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:116:9-54
+138        android:icon="@mipmap/ic_launcher"
+138-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:117:9-43
+139        android:label="@string/app_name"
+139-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:119:9-41
+140        android:roundIcon="@mipmap/ic_launcher_round"
+140-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:118:9-54
+141        android:supportsRtl="true"
+141-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:120:9-35
+142        android:testOnly="true"
+143        android:theme="@style/Theme.FocusGuard" >
+143-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:121:9-48
+144
+145        <!--
+146             ══════════════════════════════════════════════════════════════════
+147             ACTIVITIES
+148             ══════════════════════════════════════════════════════════════════
+149        -->
+150
+151
+152        <!--
+153            MainActivity — The main dashboard.
+154            Launcher activity with a singleTask launch mode to prevent duplicate
+155            instances when the user returns via the notification tap.
+156        -->
+157        <activity
+157-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:135:9-144:20
+158            android:name="com.focusguard.app.ui.MainActivity"
+158-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:136:13-44
+159            android:exported="true"
+159-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:137:13-36
+160            android:launchMode="singleTask"
+160-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:138:13-44
+161            android:windowSoftInputMode="adjustResize" >
+161-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:139:13-55
+162            <intent-filter>
+162-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:140:13-143:29
+163                <action android:name="android.intent.action.MAIN" />
+163-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:104:13-65
+163-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:104:21-62
+164
+165                <category android:name="android.intent.category.LAUNCHER" />
+165-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:105:13-73
+165-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:105:23-70
+166            </intent-filter>
+167        </activity>
+168
+169        <!--
+170            AppSelectorActivity — "Focus Breakers" screen.
+171            User selects which apps they want FocusGuard to monitor.
+172        -->
+173        <activity
+173-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:150:9-154:61
+174            android:name="com.focusguard.app.ui.AppSelectorActivity"
+174-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:151:13-51
+175            android:exported="false"
+175-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:152:13-37
+176            android:label="@string/focus_breakers_title"
+176-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:153:13-57
+177            android:parentActivityName="com.focusguard.app.ui.MainActivity" />
+177-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:154:13-58
+178
+179        <!--
+180            SettingsActivity — "AI Control Center".
+181            User adjusts the AI strictness slider.
+182        -->
+183        <activity
+183-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:160:9-164:61
+184            android:name="com.focusguard.app.ui.SettingsActivity"
+184-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:161:13-48
+185            android:exported="false"
+185-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:162:13-37
+186            android:label="@string/settings_title"
+186-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:163:13-51
+187            android:parentActivityName="com.focusguard.app.ui.MainActivity" />
+187-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:164:13-58
+188
+189<!--             OnboardingActivity — First-run permission setup wizard. -->
+190        <activity
+190-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:169:9-173:46
+191            android:name="com.focusguard.app.ui.OnboardingActivity"
+191-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:170:13-50
+192            android:exported="false"
+192-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:171:13-37
+193            android:label="@string/app_name"
+193-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:172:13-45
+194            android:launchMode="singleTop" />
+194-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:173:13-43
+195
+196        <!--
+197            BlockScreenActivity — THE MOST CRITICAL ACTIVITY.
+198
+199            This is the full-screen overlay that covers distraction apps.
+200
+201            Key attributes explained:
+202            ──────────────────────────────────────────────────────────────────
+203            android:theme="@style/Theme.FocusGuard.BlockScreen"
+204              → Transparent, no action bar, full screen. Allows the overlay
+205                to appear on top of everything with a custom dim effect.
+206
+207            android:excludeFromRecents="true"
+208              → This activity should NOT appear in the recent apps switcher.
+209                Without this, users would see a confusing extra entry.
+210
+211            android:noHistory="true"
+212              → BlockScreen should never be kept in the back stack.
+213                Pressing Back should never navigate INTO a previous block screen.
+214
+215            android:taskAffinity=""
+216              → Runs in its own task, isolated from both FocusGuard's main task
+217                and the distracting app's task. This is essential for the overlay
+218                to work correctly as a system-level alert window.
+219
+220            android:showOnLockScreen="true" + android:turnScreenOn="true"
+221              → Allows the block to appear even if the screen just turned on.
+222                Prevents users from locking/unlocking to bypass the block.
+223
+224            android:launchMode="singleInstance"
+225              → Prevents duplicate block screens from stacking up if the
+226                FocusTrackerService fires multiple times rapidly.
+227            ──────────────────────────────────────────────────────────────────
+228        -->
+229        <activity
+229-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:208:9-218:77
+230            android:name="com.focusguard.app.ui.BlockScreenActivity"
+230-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:209:13-51
+231            android:configChanges="orientation|screenSize|keyboardHidden"
+231-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:218:13-74
+232            android:excludeFromRecents="true"
+232-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:212:13-46
+233            android:exported="false"
+233-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:210:13-37
+234            android:launchMode="singleInstance"
+234-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:217:13-48
+235            android:noHistory="true"
+235-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:213:13-37
+236            android:showOnLockScreen="true"
+236-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:215:13-44
+237            android:taskAffinity=""
+237-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:214:13-36
+238            android:theme="@style/Theme.FocusGuard.BlockScreen"
+238-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:211:13-64
+239            android:turnScreenOn="true" />
+239-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:216:13-40
+240
+241        <!--
+242             ══════════════════════════════════════════════════════════════════
+243             SERVICES
+244             ══════════════════════════════════════════════════════════════════
+245        -->
+246
+247
+248        <!--
+249            FocusTrackerService — The heart of FocusGuard.
+250
+251            This foreground service:
+252              1. Polls UsageStatsManager.queryEvents() every second
+253              2. Tracks ACTIVITY_RESUMED / ACTIVITY_PAUSED events precisely
+254              3. Feeds live usage data into MLPredictor
+255              4. Triggers BlockScreenActivity when risk threshold is exceeded
+256
+257            android:foregroundServiceType="dataSync"
+258              → Required on Android 10+. "dataSync" is the appropriate type
+259                for a service that continuously reads and processes app usage data.
+260                Declared here to match the permission in the <uses-permission> tag.
+261
+262            android:stopWithTask="false"
+263              → Service continues running even when the user swipes away the app
+264                from recents. This is intentional — tracking must be persistent.
+265        -->
+266        <service
+266-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:242:9-246:44
+267            android:name="com.focusguard.app.service.FocusTrackerService"
+267-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:243:13-56
+268            android:exported="false"
+268-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:244:13-37
+269            android:foregroundServiceType="dataSync"
+269-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:245:13-53
+270            android:stopWithTask="false" />
+270-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:246:13-41
+271
+272        <!--
+273             ══════════════════════════════════════════════════════════════════
+274             BROADCAST RECEIVERS
+275             ══════════════════════════════════════════════════════════════════
+276        -->
+277
+278
+279        <!--
+280            BootReceiver — Restarts FocusTrackerService after device reboot.
+281
+282            android:enabled="true" → Receiver is active.
+283            android:exported="true" → MUST be true to receive system broadcasts
+284              like BOOT_COMPLETED. Android lint will warn about this but it is
+285              required. The intent-filter restricts to specific system actions.
+286              directBootAware="false" means it fires after the user unlocks
+287              (appropriate — we don't want to track before user session starts).
+288        -->
+289        <receiver
+289-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:262:9-271:20
+290            android:name="com.focusguard.app.receiver.BootReceiver"
+290-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:263:13-50
+291            android:enabled="true"
+291-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:265:13-35
+292            android:exported="true" >
+292-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:264:13-36
+293            <intent-filter android:priority="999" >
+293-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:266:13-270:29
+293-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:266:28-50
+294                <action android:name="android.intent.action.BOOT_COMPLETED" />
+294-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:267:17-79
+294-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:267:25-76
+295                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+295-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:268:17-84
+295-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:268:25-81
+296
+297                <category android:name="android.intent.category.DEFAULT" />
+297-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:269:17-76
+297-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:269:27-73
+298            </intent-filter>
+299        </receiver>
+300
+301<!--             DailySummaryReceiver — Triggered by WorkManager for daily summaries. -->
+302        <receiver
+302-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:276:9-278:40
+303            android:name="com.focusguard.app.receiver.DailySummaryReceiver"
+303-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:277:13-58
+304            android:exported="false" />
+304-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:278:13-37
+305
+306        <!--
+307             ══════════════════════════════════════════════════════════════════
+308             PROVIDER
+309             ══════════════════════════════════════════════════════════════════
+310        -->
+311
+312
+313        <!--
+314            Room Database FileProvider — not strictly needed for FocusGuard v1
+315            but included as a safe scaffolding placeholder for future export
+316            of usage reports to the file system.
+317        -->
+318        <provider
+319            android:name="androidx.core.content.FileProvider"
+319-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:290:13-62
+320            android:authorities="com.focusguard.app.debug.fileprovider"
+320-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:291:13-64
+321            android:exported="false"
+321-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:292:13-37
+322            android:grantUriPermissions="true" >
+322-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:293:13-47
+323            <meta-data
+323-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:294:13-296:54
+324                android:name="android.support.FILE_PROVIDER_PATHS"
+324-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:295:17-67
+325                android:resource="@xml/file_paths" />
+325-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:296:17-51
+326        </provider>
+327        <provider
+327-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:29:9-37:20
+328            android:name="androidx.startup.InitializationProvider"
+328-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:30:13-67
+329            android:authorities="com.focusguard.app.debug.androidx-startup"
+329-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:31:13-68
+330            android:exported="false" >
+330-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:32:13-37
+331            <meta-data
+331-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:34:13-36:52
+332                android:name="androidx.work.WorkManagerInitializer"
+332-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:35:17-68
+333                android:value="androidx.startup" />
+333-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:36:17-49
+334            <meta-data
+334-->[androidx.emoji2:emoji2:1.3.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\5e3058640a5851135139e4f3622f6256\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+335                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+335-->[androidx.emoji2:emoji2:1.3.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\5e3058640a5851135139e4f3622f6256\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+336                android:value="androidx.startup" />
+336-->[androidx.emoji2:emoji2:1.3.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\5e3058640a5851135139e4f3622f6256\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+337            <meta-data
+337-->[androidx.lifecycle:lifecycle-process:2.8.3] C:\Users\dell\.gradle\caches\9.0.0\transforms\e9420c842f4252bc3e92c2865d659782\transformed\jetified-lifecycle-process-2.8.3\AndroidManifest.xml:29:13-31:52
+338                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+338-->[androidx.lifecycle:lifecycle-process:2.8.3] C:\Users\dell\.gradle\caches\9.0.0\transforms\e9420c842f4252bc3e92c2865d659782\transformed\jetified-lifecycle-process-2.8.3\AndroidManifest.xml:30:17-78
+339                android:value="androidx.startup" />
+339-->[androidx.lifecycle:lifecycle-process:2.8.3] C:\Users\dell\.gradle\caches\9.0.0\transforms\e9420c842f4252bc3e92c2865d659782\transformed\jetified-lifecycle-process-2.8.3\AndroidManifest.xml:31:17-49
+340            <meta-data
+340-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+341                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+341-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+342                android:value="androidx.startup" />
+342-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+343        </provider>
+344
+345        <service
+345-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:39:9-45:35
+346            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+346-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:40:13-88
+347            android:directBootAware="false"
+347-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:41:13-44
+348            android:enabled="@bool/enable_system_alarm_service_default"
+348-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:42:13-72
+349            android:exported="false" />
+349-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:43:13-37
+350        <service
+350-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:46:9-52:35
+351            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+351-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:47:13-84
+352            android:directBootAware="false"
+352-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:48:13-44
+353            android:enabled="@bool/enable_system_job_service_default"
+353-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:49:13-70
+354            android:exported="true"
+354-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:50:13-36
+355            android:permission="android.permission.BIND_JOB_SERVICE" />
+355-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:51:13-69
+356        <service
+356-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:53:9-59:35
+357            android:name="androidx.work.impl.foreground.SystemForegroundService"
+357-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:54:13-81
+358            android:directBootAware="false"
+358-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:55:13-44
+359            android:enabled="@bool/enable_system_foreground_service_default"
+359-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:56:13-77
+360            android:exported="false" />
+360-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:57:13-37
+361
+362        <receiver
+362-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:61:9-66:35
+363            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+363-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:62:13-88
+364            android:directBootAware="false"
+364-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:63:13-44
+365            android:enabled="true"
+365-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:64:13-35
+366            android:exported="false" />
+366-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:65:13-37
+367        <receiver
+367-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:67:9-77:20
+368            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+368-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:68:13-106
+369            android:directBootAware="false"
+369-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:69:13-44
+370            android:enabled="false"
+370-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:70:13-36
+371            android:exported="false" >
+371-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:71:13-37
+372            <intent-filter>
+372-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:73:13-76:29
+373                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+373-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:74:17-87
+373-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:74:25-84
+374                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+374-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:75:17-90
+374-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:75:25-87
+375            </intent-filter>
+376        </receiver>
+377        <receiver
+377-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:78:9-88:20
+378            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+378-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:79:13-104
+379            android:directBootAware="false"
+379-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:80:13-44
+380            android:enabled="false"
+380-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:81:13-36
+381            android:exported="false" >
+381-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:82:13-37
+382            <intent-filter>
+382-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:84:13-87:29
+383                <action android:name="android.intent.action.BATTERY_OKAY" />
+383-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:85:17-77
+383-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:85:25-74
+384                <action android:name="android.intent.action.BATTERY_LOW" />
+384-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:86:17-76
+384-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:86:25-73
+385            </intent-filter>
+386        </receiver>
+387        <receiver
+387-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:89:9-99:20
+388            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+388-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:90:13-104
+389            android:directBootAware="false"
+389-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:91:13-44
+390            android:enabled="false"
+390-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:92:13-36
+391            android:exported="false" >
+391-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:93:13-37
+392            <intent-filter>
+392-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:95:13-98:29
+393                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+393-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:96:17-83
+393-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:96:25-80
+394                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+394-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:97:17-82
+394-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:97:25-79
+395            </intent-filter>
+396        </receiver>
+397        <receiver
+397-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:100:9-109:20
+398            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+398-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:101:13-103
+399            android:directBootAware="false"
+399-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:102:13-44
+400            android:enabled="false"
+400-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:103:13-36
+401            android:exported="false" >
+401-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:104:13-37
+402            <intent-filter>
+402-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:106:13-108:29
+403                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+403-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:107:17-79
+403-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:107:25-76
+404            </intent-filter>
+405        </receiver>
+406        <receiver
+406-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:110:9-121:20
+407            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+407-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:111:13-88
+408            android:directBootAware="false"
+408-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:112:13-44
+409            android:enabled="false"
+409-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:113:13-36
+410            android:exported="false" >
+410-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:114:13-37
+411            <intent-filter>
+411-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:116:13-120:29
+412                <action android:name="android.intent.action.BOOT_COMPLETED" />
+412-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:267:17-79
+412-->C:\Users\dell\Downloads\files\app\src\main\AndroidManifest.xml:267:25-76
+413                <action android:name="android.intent.action.TIME_SET" />
+413-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:118:17-73
+413-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:118:25-70
+414                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+414-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:119:17-81
+414-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:119:25-78
+415            </intent-filter>
+416        </receiver>
+417        <receiver
+417-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:122:9-131:20
+418            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+418-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:123:13-99
+419            android:directBootAware="false"
+419-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:124:13-44
+420            android:enabled="@bool/enable_system_alarm_service_default"
+420-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:125:13-72
+421            android:exported="false" >
+421-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:126:13-37
+422            <intent-filter>
+422-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:128:13-130:29
+423                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+423-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:129:17-98
+423-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:129:25-95
+424            </intent-filter>
+425        </receiver>
+426        <receiver
+426-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:132:9-142:20
+427            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+427-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:133:13-78
+428            android:directBootAware="false"
+428-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:134:13-44
+429            android:enabled="true"
+429-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:135:13-35
+430            android:exported="true"
+430-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:136:13-36
+431            android:permission="android.permission.DUMP" >
+431-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:137:13-57
+432            <intent-filter>
+432-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:139:13-141:29
+433                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+433-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:140:17-88
+433-->[androidx.work:work-runtime:2.9.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\29596d197b3a9effddefbe6da1b5a1c2\transformed\work-runtime-2.9.0\AndroidManifest.xml:140:25-85
+434            </intent-filter>
+435        </receiver>
+436
+437        <uses-library
+437-->[androidx.window:window:1.0.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\cd4676ebb2c09e4e1b536f7a1242cf9e\transformed\jetified-window-1.0.0\AndroidManifest.xml:25:9-27:40
+438            android:name="androidx.window.extensions"
+438-->[androidx.window:window:1.0.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\cd4676ebb2c09e4e1b536f7a1242cf9e\transformed\jetified-window-1.0.0\AndroidManifest.xml:26:13-54
+439            android:required="false" />
+439-->[androidx.window:window:1.0.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\cd4676ebb2c09e4e1b536f7a1242cf9e\transformed\jetified-window-1.0.0\AndroidManifest.xml:27:13-37
+440        <uses-library
+440-->[androidx.window:window:1.0.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\cd4676ebb2c09e4e1b536f7a1242cf9e\transformed\jetified-window-1.0.0\AndroidManifest.xml:28:9-30:40
+441            android:name="androidx.window.sidecar"
+441-->[androidx.window:window:1.0.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\cd4676ebb2c09e4e1b536f7a1242cf9e\transformed\jetified-window-1.0.0\AndroidManifest.xml:29:13-51
+442            android:required="false" />
+442-->[androidx.window:window:1.0.0] C:\Users\dell\.gradle\caches\9.0.0\transforms\cd4676ebb2c09e4e1b536f7a1242cf9e\transformed\jetified-window-1.0.0\AndroidManifest.xml:30:13-37
+443
+444        <service
+444-->[androidx.room:room-runtime:2.6.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\517d32f5d77340a1869f5b3255d7b7cf\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+445            android:name="androidx.room.MultiInstanceInvalidationService"
+445-->[androidx.room:room-runtime:2.6.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\517d32f5d77340a1869f5b3255d7b7cf\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+446            android:directBootAware="true"
+446-->[androidx.room:room-runtime:2.6.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\517d32f5d77340a1869f5b3255d7b7cf\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+447            android:exported="false" />
+447-->[androidx.room:room-runtime:2.6.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\517d32f5d77340a1869f5b3255d7b7cf\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+448
+449        <receiver
+449-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+450            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+450-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+451            android:directBootAware="false"
+451-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+452            android:enabled="true"
+452-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+453            android:exported="true"
+453-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+454            android:permission="android.permission.DUMP" >
+454-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+455            <intent-filter>
+455-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+456                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+456-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+456-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+457            </intent-filter>
+458            <intent-filter>
+458-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+459                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+459-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+459-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+460            </intent-filter>
+461            <intent-filter>
+461-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+462                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+462-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+462-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+463            </intent-filter>
+464            <intent-filter>
+464-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+465                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+465-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+465-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\dell\.gradle\caches\9.0.0\transforms\5a02408ea8e87bcf3ddf12b71cd392e3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+466            </intent-filter>
+467        </receiver>
+468    </application>
+469
+470</manifest>

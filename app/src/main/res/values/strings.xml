@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/values/strings.xml
+    ════════════════════════════════════════════════════════════════════════
+    UX Copywriting Philosophy:
+      Every string here has been written for a zero-technical-knowledge user.
+      Rules followed:
+        1. Never use: "ML", "model", "algorithm", "threshold", "prediction",
+           "neural network", "TFLite", "inference", "package name", "API"
+        2. Use plain human language: "the AI", "your habits", "distraction risk"
+        3. Calm, encouraging, non-judgmental tone throughout
+        4. Short sentences — max 12 words for action labels
+        5. Use "you/your" to make it personal and warm
+    ════════════════════════════════════════════════════════════════════════
+-->
+<resources>
+
+    <!-- ── App Name ── -->
+    <string name="app_name">FocusGuard</string>
+    <string name="app_tagline">Your calm, intelligent focus companion</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN DASHBOARD — activity_main.xml
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="dashboard_greeting_morning">Good morning ☀️</string>
+    <string name="dashboard_greeting_afternoon">Good afternoon 🌤️</string>
+    <string name="dashboard_greeting_evening">Good evening 🌙</string>
+
+    <!-- Screen time ring labels -->
+    <string name="screen_time_ring_label">Screen Time Today</string>
+    <string name="screen_time_format_hours">%1$dh %2$dm</string>
+    <string name="screen_time_format_mins">%1$dm</string>
+    <string name="screen_time_zero">Just getting started</string>
+    <string name="screen_time_goal_label">Daily goal: %1$s</string>
+
+    <!-- Focus status messages — shown based on distraction risk level -->
+    <string name="status_all_good">You\'re doing great! 🎯</string>
+    <string name="status_slight_drift">You\'re drifting a little</string>
+    <string name="status_watch_out">Watch out — distractions nearby</string>
+    <string name="status_blocked">FocusGuard stepped in 🛡️</string>
+    <string name="status_tracking_off">Tracking is paused</string>
+
+    <!-- Focus status sub-labels -->
+    <string name="status_all_good_sub">Keep up the good work today.</string>
+    <string name="status_slight_drift_sub">A small break is fine. Try to refocus soon.</string>
+    <string name="status_watch_out_sub">You\'ve been on a distracting app for a while.</string>
+    <string name="status_blocked_sub">FocusGuard blocked a distraction for you.</string>
+
+    <!-- Today's Highlights section -->
+    <string name="highlights_section_title">Today\'s Highlights</string>
+    <string name="highlight_most_used_app">Most used app</string>
+    <string name="highlight_time_on_distractions">Time on distracting apps</string>
+    <string name="highlight_blocks_today">Times FocusGuard helped</string>
+    <string name="highlight_focus_score">Your focus score</string>
+    <string name="highlight_no_data">No activity recorded yet today.</string>
+
+    <!-- Focus score descriptions -->
+    <string name="focus_score_excellent">Excellent</string>
+    <string name="focus_score_good">Good</string>
+    <string name="focus_score_fair">Fair</string>
+    <string name="focus_score_needs_work">Needs work</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_focus_breakers">Focus Breakers</string>
+    <string name="nav_ai_settings">AI Settings</string>
+
+    <!-- FAB / Actions -->
+    <string name="action_start_focus">Start Focus Mode</string>
+    <string name="action_stop_focus">Pause Monitoring</string>
+
+    <!-- Service status chip -->
+    <string name="service_active">● FocusGuard Active</string>
+    <string name="service_inactive">○ Monitoring paused</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         APP SELECTOR — activity_app_selector.xml ("Focus Breakers")
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="focus_breakers_title">Focus Breakers</string>
+    <string name="focus_breakers_subtitle">Tell the AI which apps tend to distract you.\nIt\'ll watch them closely.</string>
+    <string name="focus_breakers_empty_title">No apps added yet</string>
+    <string name="focus_breakers_empty_body">Tap the + button below to choose apps that tend to distract you.</string>
+    <string name="focus_breakers_search_hint">Search your apps…</string>
+    <string name="focus_breakers_add_button">Add an app</string>
+    <string name="focus_breakers_monitored_count_single">%1$d app being watched</string>
+    <plurals name="focus_breakers_monitored_count_plural">
+        <item quantity="one">%1$d app being watched</item>
+        <item quantity="other">%1$d apps being watched</item>
+    </plurals>
+
+    <!-- RecyclerView item — item_app_card.xml -->
+    <string name="app_card_switch_label">Is this app a distraction for you?</string>
+    <string name="app_card_switch_on">Yes, watch this one</string>
+    <string name="app_card_switch_off">Not monitoring</string>
+    <string name="app_card_risk_label">AI thinks: </string>
+    <string name="app_card_risk_low">Low risk</string>
+    <string name="app_card_risk_medium">Moderate risk</string>
+    <string name="app_card_risk_high">High risk</string>
+    <string name="app_card_remove_content_desc">Remove %1$s from your list</string>
+
+    <!-- App picker bottom sheet -->
+    <string name="picker_title">Choose an app to watch</string>
+    <string name="picker_search_hint">Search installed apps…</string>
+    <string name="picker_empty">No apps found</string>
+    <string name="picker_already_added">Already in your list</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SETTINGS — activity_settings.xml ("AI Control Center")
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="settings_title">AI Settings</string>
+    <string name="settings_ai_section">How the AI Works</string>
+
+    <!-- Strictness slider -->
+    <string name="settings_strictness_title">How strict should the AI be?</string>
+    <string name="settings_strictness_subtitle">This controls how quickly FocusGuard steps in when it detects a distraction.</string>
+    <string name="settings_strictness_chill">Chill</string>
+    <string name="settings_strictness_balanced">Balanced</string>
+    <string name="settings_strictness_strict">Strict</string>
+
+    <!-- Strictness descriptions — shown below slider as user moves it -->
+    <string name="settings_strictness_desc_chill">The AI only steps in when you\'ve been distracted for a long time. Good for a relaxed day.</string>
+    <string name="settings_strictness_desc_balanced">A healthy middle ground. The AI will step in after a moderate amount of distraction time.</string>
+    <string name="settings_strictness_desc_strict">The AI steps in quickly and firmly. Best for when you really need to focus.</string>
+
+    <!-- Daily goal setting -->
+    <string name="settings_daily_goal_section">Daily Screen Time Goal</string>
+    <string name="settings_daily_goal_title">What\'s your daily screen time goal?</string>
+    <string name="settings_daily_goal_subtitle">FocusGuard will show you a gentle warning as you get close.</string>
+    <string name="settings_daily_goal_value">%1$d hours</string>
+    <string name="settings_daily_goal_none">No goal set</string>
+
+    <!-- Notifications section -->
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_notification_daily_summary">Send me a daily check-in</string>
+    <string name="settings_notification_daily_summary_sub">A short summary of your screen time each evening.</string>
+    <string name="settings_notification_reminders">Send me focus reminders</string>
+    <string name="settings_notification_reminders_sub">Gentle nudges when you\'ve been on your phone too long.</string>
+
+    <!-- Privacy section -->
+    <string name="settings_privacy_section">Privacy</string>
+    <string name="settings_privacy_data_local">All data stays on your phone</string>
+    <string name="settings_privacy_data_local_sub">FocusGuard never uploads your usage data anywhere.</string>
+    <string name="settings_clear_data">Clear all my data</string>
+    <string name="settings_clear_data_confirm_title">Clear all data?</string>
+    <string name="settings_clear_data_confirm_body">This will delete all your screen time history. This cannot be undone.</string>
+    <string name="settings_clear_data_confirm_yes">Yes, clear everything</string>
+    <string name="settings_clear_data_confirm_no">Never mind</string>
+
+    <!-- Permissions section -->
+    <string name="settings_permissions_section">App Permissions</string>
+    <string name="settings_permission_usage_title">Screen time access</string>
+    <string name="settings_permission_usage_sub_granted">✓ Granted — FocusGuard can see which apps you\'re using.</string>
+    <string name="settings_permission_usage_sub_missing">⚠ Required — Tap to grant in Settings.</string>
+    <string name="settings_permission_overlay_title">Display over other apps</string>
+    <string name="settings_permission_overlay_sub_granted">✓ Granted — FocusGuard can show its focus screen.</string>
+    <string name="settings_permission_overlay_sub_missing">⚠ Required — Tap to grant in Settings.</string>
+    <string name="settings_permission_notifications_title">Notifications</string>
+    <string name="settings_permission_notifications_sub_granted">✓ Granted</string>
+    <string name="settings_permission_notifications_sub_missing">Optional — Tap to allow focus reminders.</string>
+    <string name="settings_permission_button_grant">Grant</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         BLOCK SCREEN — layout_block_screen.xml
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="block_title">Time to focus.</string>
+    <string name="block_subtitle">You\'ve been on a distracting app for a while.\nYou\'ve got this.</string>
+    <string name="block_app_label">You were using</string>
+    <string name="block_time_label">for</string>
+    <string name="block_cta_close_app">Close the app</string>
+    <string name="block_cta_snooze_5">Give me 5 more minutes</string>
+    <string name="block_snooze_warning">Snoozing too often can make it harder to focus.\nYou\'ve snoozed %1$d time(s) today.</string>
+    <string name="block_encouragement_1">Deep work is just a few seconds away. 💪</string>
+    <string name="block_encouragement_2">Your future self will thank you. ✨</string>
+    <string name="block_encouragement_3">One small step toward focus. 🎯</string>
+    <string name="block_encouragement_4">You\'re stronger than the scroll. 🌿</string>
+    <string name="block_encouragement_5">Take a breath. The real world is better. 🌅</string>
+    <string name="block_icon_content_desc">Focus shield icon</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ONBOARDING
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="onboarding_welcome_title">Welcome to FocusGuard 🛡️</string>
+    <string name="onboarding_welcome_body">FocusGuard uses AI to help you notice when you\'re getting distracted — and gently steps in before it gets out of hand.</string>
+    <string name="onboarding_how_it_works_title">How it works</string>
+    <string name="onboarding_how_it_works_body">You tell us which apps tend to distract you. Our AI watches for habits like late-night scrolling or long binge sessions, and quietly intervenes when needed.</string>
+    <string name="onboarding_permissions_title">Two quick permissions</string>
+    <string name="onboarding_permissions_body">FocusGuard needs two things to work:\n\n• See which app you\'re using (stays private, never shared)\n• Show a screen on top of apps when you need a nudge</string>
+    <string name="onboarding_button_next">Next</string>
+    <string name="onboarding_button_get_started">Let\'s go!</string>
+    <string name="onboarding_button_grant_usage">Grant screen time access</string>
+    <string name="onboarding_button_grant_overlay">Allow display over apps</string>
+    <string name="onboarding_skip">Skip for now</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         NOTIFICATIONS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="notification_tracking_title">FocusGuard is keeping watch 👁️</string>
+    <string name="notification_tracking_body">Your screen time is being monitored privately.</string>
+    <string name="notification_block_title">Distraction detected</string>
+    <string name="notification_block_body">FocusGuard stepped in to help you refocus.</string>
+    <string name="notification_daily_summary_title">Your day, in focus 📊</string>
+    <string name="notification_daily_summary_body">You spent %1$s on your phone today. Tap to see your full summary.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         GENERIC UI
+         ═══════════════════════════════════════════════════════════════════ -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_done">Done</string>
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="loading">Loading…</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="content_desc_app_icon">App icon for %1$s</string>
+
+</resources>

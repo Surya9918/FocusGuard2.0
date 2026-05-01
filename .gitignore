@@ -1,0 +1,24 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizard.settings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Flutter module ignores
+/flutter_nudge/.android/
+/flutter_nudge/.ios/
+/flutter_nudge/.dart_tool/
+/flutter_nudge/.packages
+/flutter_nudge/.pub-cache/
+/flutter_nudge/.pub/
+/flutter_nudge/build/

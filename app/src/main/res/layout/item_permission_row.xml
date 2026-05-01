@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/layout/item_permission_row.xml
+    Reusable permission status row, included 3× in activity_settings.xml.
+    All text and state set programmatically in SettingsActivity.java.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_permission_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="64dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="10dp">
+
+    <!-- Status icon: checkmark (granted) or warning (missing) -->
+    <ImageView
+        android:id="@+id/img_permission_status"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_check_circle"
+        app:tint="@color/status_focused_green"
+        tools:src="@drawable/ic_check_circle" />
+
+    <!-- Title + subtitle stacked -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_permission_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            tools:text="Screen time access" />
+
+        <TextView
+            android:id="@+id/tv_permission_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="✓ Granted" />
+
+    </LinearLayout>
+
+    <!-- Grant button — only visible when permission is missing -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_grant_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_permission_button_grant"
+        android:visibility="gone"
+        style="@style/Widget.Material3.Button.TonalButton"
+        tools:visibility="visible" />
+
+</LinearLayout>

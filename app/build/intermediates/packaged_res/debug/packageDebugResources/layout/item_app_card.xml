@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/layout/item_app_card.xml
+    ════════════════════════════════════════════════════════════════════════
+    RecyclerView item: one card per tracked app in the Focus Breakers list.
+
+    Layout structure:
+      [App Icon] [App Name]        [MaterialSwitch]
+                 [AI Risk Chip]
+
+    UX decisions:
+      - The switch label says "Is this app a distraction for you?"
+        This is intentionally personal and empowering.
+      - The AI risk chip shows "Low risk / Moderate risk / High risk"
+        — NEVER shows numeric probability values (jargon-free)
+      - The entire card is clickable (ripple) but the switch is the
+        primary interactive element
+      - Min height 72dp for comfortable touch targets (Material 3 spec)
+      - Swipe-to-delete is handled in the adapter via ItemTouchHelper;
+        no extra UI needed here.
+    ════════════════════════════════════════════════════════════════════════
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_app_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    style="@style/Style.FocusGuard.Card"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeColor="?attr/colorOutlineVariant"
+    app:strokeWidth="1dp"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="80dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp">
+
+        <!-- ── App Icon ── -->
+        <ImageView
+            android:id="@+id/img_app_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_app_placeholder"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- ── App Name ── -->
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintEnd_toStartOf="@id/switch_monitored"
+            app:layout_constraintStart_toEndOf="@id/img_app_icon"
+            app:layout_constraintTop_toTopOf="@id/img_app_icon"
+            tools:text="Instagram" />
+
+        <!-- ── AI Risk Chip (below app name) ── -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_risk_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/app_card_risk_high"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            app:chipBackgroundColor="@color/md_theme_light_errorContainer"
+            app:chipStrokeWidth="0dp"
+            app:chipMinTouchTargetSize="0dp"
+            app:ensureMinTouchTargetSize="false"
+            app:chipStartPadding="6dp"
+            app:chipEndPadding="6dp"
+            style="@style/Widget.Material3.Chip.Assist"
+            app:layout_constraintBottom_toBottomOf="@id/img_app_icon"
+            app:layout_constraintStart_toStartOf="@id/tv_app_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_app_name"
+            tools:text="High risk" />
+
+        <!-- ── MaterialSwitch: "Is this app a distraction for you?" ──
+             Placed at the end of the card row.
+             The switch itself is the toggle; the label is in tv_switch_label.
+             Using MaterialSwitch (MD3) for the modern pill-shaped toggle.
+        -->
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_monitored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:showText="false"
+            android:contentDescription="@string/app_card_switch_label"
+            style="@style/Style.FocusGuard.Switch"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- ── Switch label (below the switch, small text) ──
+             Shows "Yes, watch this one" / "Not monitoring" based on state.
+             This removes ambiguity about what the switch does.
+        -->
+        <TextView
+            android:id="@+id/tv_switch_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/app_card_switch_on"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="@id/switch_monitored"
+            app:layout_constraintStart_toStartOf="@id/switch_monitored"
+            app:layout_constraintTop_toBottomOf="@id/switch_monitored"
+            android:gravity="center"
+            tools:text="Yes, watch this one" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

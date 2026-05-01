@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.focusguard.app-mergeDebugResources-46:/values-sw360dp-v13/values-sw360dp-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\dell\\.gradle\\caches\\9.0.0\\transforms\\d3d6a9a8c0b1ceb042f140fbed20ea5e\\transformed\\preference-1.2.1\\res\\values-sw360dp-v13\\values-sw360dp-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "71",
+                        "endOffsets": "122"
+                    }
+                }
+            ]
+        }
+    ]
+}

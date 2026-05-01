@@ -1,0 +1,12 @@
+com.focusguard.app.test.app-jetified-core-1.6.1-0 C:\Users\dell\.gradle\caches\9.0.0\transforms\21679060474694fd51e30e55ce459841\transformed\jetified-core-1.6.1\res
+com.focusguard.app.test.app-room-runtime-2.6.1-1 C:\Users\dell\.gradle\caches\9.0.0\transforms\517d32f5d77340a1869f5b3255d7b7cf\transformed\room-runtime-2.6.1\res
+com.focusguard.app.test.app-core-runtime-2.2.0-2 C:\Users\dell\.gradle\caches\9.0.0\transforms\7f5ae80ea433a5bde008ab9ee585b875\transformed\core-runtime-2.2.0\res
+com.focusguard.app.test.app-room-testing-2.6.1-3 C:\Users\dell\.gradle\caches\9.0.0\transforms\a106038c0905f80e6476ea82fa80000c\transformed\room-testing-2.6.1\res
+com.focusguard.app.test.app-jetified-annotation-experimental-1.4.0-4 C:\Users\dell\.gradle\caches\9.0.0\transforms\b8e88fcda4fe27e8205e573925f4aa44\transformed\jetified-annotation-experimental-1.4.0\res
+com.focusguard.app.test.app-sqlite-framework-2.4.0-5 C:\Users\dell\.gradle\caches\9.0.0\transforms\dc0dee18ea271fbe5677e1d712b6bb67\transformed\sqlite-framework-2.4.0\res
+com.focusguard.app.test.app-sqlite-2.4.0-6 C:\Users\dell\.gradle\caches\9.0.0\transforms\e59a6b47d8a0bbff86da6d7b6fbfc22e\transformed\sqlite-2.4.0\res
+com.focusguard.app.test.app-androidTest-7 C:\Users\dell\Downloads\files\app\build\generated\res\resValues\androidTest\debug
+com.focusguard.app.test.app-updated_navigation_xml-8 C:\Users\dell\Downloads\files\app\build\generated\updated_navigation_xml\debugAndroidTest
+com.focusguard.app.test.app-mergeDebugAndroidTestResources-9 C:\Users\dell\Downloads\files\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.focusguard.app.test.app-mergeDebugAndroidTestResources-10 C:\Users\dell\Downloads\files\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.focusguard.app.test.app-debugAndroidTest-11 C:\Users\dell\Downloads\files\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources

@@ -1,0 +1,181 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// FocusGuard — app/build.gradle
+// Module-level Gradle build configuration
+//
+// Architecture Notes:
+//   - compileSdk 34  → Android 14 support (required for full-screen intents)
+//   - minSdk 26      → Android 8.0+; required for UsageStatsManager.queryEvents()
+//                       with ACTIVITY_RESUMED / ACTIVITY_PAUSED constants
+//   - targetSdk 34   → Full behavioral compatibility with Android 14
+// ─────────────────────────────────────────────────────────────────────────────
+
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.focusguard.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.focusguard.app"
+        minSdk 26              // Android 8.0 — minimum for precise event-based tracking
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Room schema export directory for migration tracking
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                    "room.schemaLocation"   : "$projectDir/schemas",
+                    "room.incremental"      : "true",
+                    "room.expandProjection" : "true"
+                ]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // CRITICAL: Prevent Gradle from compressing the TFLite model file.
+    // TFLite loads the model via memory-mapped file I/O for zero-copy efficiency.
+    // If the .tflite file is compressed in the APK, mmap() will fail at runtime.
+    // ─────────────────────────────────────────────────────────────────────────
+    aaptOptions {
+        noCompress "tflite"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        viewBinding true   // Replaces findViewById — null-safe, boilerplate-free
+    }
+
+    // Packaging options to avoid duplicate META-INF files from TFLite transitive deps
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+        resources {
+            excludes += [
+                '/META-INF/DEPENDENCIES',
+                '/META-INF/LICENSE',
+                '/META-INF/LICENSE.txt',
+                '/META-INF/NOTICE',
+                '/META-INF/NOTICE.txt',
+                'META-INF/proguard/androidx-annotations.pro'
+            ]
+        }
+    }
+}
+
+dependencies {
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // FLUTTER INTEGRATION
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation project(':flutter')
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // CORE ANDROID & APPCOMPAT
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.activity:activity:1.9.0'
+    implementation 'androidx.fragment:fragment:1.8.1'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // MATERIAL DESIGN 3
+    // Provides: MaterialButton, MaterialCardView, MaterialSlider,
+    //           MaterialSwitch, CircularProgressIndicator, BottomNavigationView,
+    //           NavigationBar, ChipGroup, and all M3 theming tokens
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'com.google.android.material:material:1.12.0'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // CONSTRAINT LAYOUT
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // TENSORFLOW LITE — On-device ML inference
+    //
+    // tensorflow-lite         : Core inference engine (C++ under the hood)
+    // tensorflow-lite-support : High-level Java API — handles tensor I/O,
+    //                           normalization, and type conversion for us
+    // tensorflow-lite-gpu     : Optional GPU delegate for faster inference;
+    //                           gracefully falls back to CPU if unavailable
+    //
+    // Keep versions in sync — mismatches cause cryptic JNI crashes.
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.4'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.14.0'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // ROOM DATABASE — Local SQLite ORM for screen time history
+    //
+    // Used for:
+    //   - Storing daily app usage sessions (AppUsageRecord)
+    //   - Querying weekly/monthly aggregates for the dashboard
+    //   - Persisting user preferences for "distraction apps"
+    // ─────────────────────────────────────────────────────────────────────────
+    def room_version = "2.6.1"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // RxJava/Coroutines integration (for async DB queries on background threads)
+    implementation "androidx.room:room-rxjava3:$room_version"
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // LIFECYCLE — ViewModels and LiveData for MVVM architecture
+    // ─────────────────────────────────────────────────────────────────────────
+    def lifecycle_version = "2.8.3"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"   // For LifecycleService
+    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // WORK MANAGER — For scheduling daily summary notifications
+    //   (runs even when app is backgrounded, battery-efficient)
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'androidx.work:work-runtime:2.9.0'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SHARED PREFERENCES — Lightweight key-value storage for user settings
+    //   (AI strictness level, onboarding complete flag, etc.)
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'androidx.preference:preference:1.2.1'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // RECYCLER VIEW & CARD VIEW
+    // ─────────────────────────────────────────────────────────────────────────
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // TESTING
+    // ─────────────────────────────────────────────────────────────────────────
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation "androidx.room:room-testing:$room_version"
+}

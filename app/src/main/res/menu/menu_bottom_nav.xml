@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/menu/menu_bottom_nav.xml -->
+<!-- Bottom navigation bar items — JARGON FREE labels only -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/nav_home"
+        android:contentDescription="@string/nav_home" />
+
+    <item
+        android:id="@+id/nav_focus_breakers"
+        android:icon="@drawable/ic_focus_breakers"
+        android:title="@string/nav_focus_breakers"
+        android:contentDescription="@string/nav_focus_breakers" />
+
+    <item
+        android:id="@+id/nav_ai_settings"
+        android:icon="@drawable/ic_ai_settings"
+        android:title="@string/nav_ai_settings"
+        android:contentDescription="@string/nav_ai_settings" />
+
+</menu>

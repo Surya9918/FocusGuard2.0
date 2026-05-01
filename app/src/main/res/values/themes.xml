@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/values/themes.xml  (light theme)
+    ════════════════════════════════════════════════════════════════════════
+    Copy the dark variant to res/values-night/themes.xml and replace
+    all "light" color references with "dark" equivalents.
+
+    Theme hierarchy:
+      Theme.FocusGuard              → Main app screens (Dashboard, Settings)
+      Theme.FocusGuard.BlockScreen  → Full-screen overlay (no ActionBar,
+                                        dark background, translucent status bar)
+      Theme.FocusGuard.Onboarding   → First-run wizard (clean, no back arrow)
+    ════════════════════════════════════════════════════════════════════════
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MAIN APPLICATION THEME
+         Extends Material3 to inherit all MD3 component styles automatically.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <style name="Theme.FocusGuard" parent="Theme.Material3.Light.NoActionBar">
+
+        <!-- ── Primary Role ── -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+
+        <!-- ── Secondary Role ── -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+
+        <!-- ── Tertiary Role (caution/warning) ── -->
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+
+        <!-- ── Error Role ── -->
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+
+        <!-- ── Surface & Background ── -->
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+
+        <!-- ── Outline ── -->
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_light_outlineVariant</item>
+
+        <!-- ── Inverse ── -->
+        <!-- Commented out because of linking errors
+        <item name="colorInverseSurface">@color/md_theme_light_inverseSurface</item>
+        <item name="colorInverseOnSurface">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorInversePrimary">@color/md_theme_light_inversePrimary</item>
+        -->
+
+        <!-- ── Surface Tint (elevation overlay in MD3) ── -->
+        <!-- Commented out because of linking errors
+        <item name="colorSurfaceTint">@color/md_theme_light_surfaceTint</item>
+        -->
+
+        <!-- ── System Bar Styling ── -->
+        <!-- Light status bar = dark icons on light background -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+
+        <!-- Edge-to-edge layout: content draws behind system bars -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
+
+        <!-- ── Typography ── -->
+        <!-- Uses default MD3 typography (Roboto Flex). Override here for custom fonts. -->
+        <!-- Example: <item name="textAppearanceDisplayLarge">@style/TextAppearance.FocusGuard.Display</item> -->
+
+        <!-- ── Shape System ── -->
+        <!-- MD3 shapes are defined in shape.xml. Using extra-rounded corners
+             reinforces the calm, friendly aesthetic of a wellbeing app. -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.FocusGuard.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.FocusGuard.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.FocusGuard.Large</item>
+
+        <!-- ── Motion ── -->
+        <!-- MD3 motion uses shared-axis and container-transform transitions.
+             windowActivityTransitions enables these. -->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         BLOCK SCREEN THEME
+         Full-screen overlay with deep dark background and no action bar.
+         Used exclusively by BlockScreenActivity.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <style name="Theme.FocusGuard.BlockScreen" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Force dark regardless of system theme — block screen is always dramatic -->
+        <item name="android:colorBackground">@color/block_screen_background</item>
+        <item name="colorSurface">@color/block_screen_surface</item>
+        <item name="colorPrimary">@color/block_screen_accent</item>
+        <item name="colorOnPrimary">@color/block_screen_text_primary</item>
+        <item name="colorOnBackground">@color/block_screen_text_primary</item>
+
+        <!-- Fully transparent system bars — block screen fills the entire display -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+
+        <!-- No title, no action bar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Dim the window behind the block screen for focus -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.7</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ONBOARDING THEME
+         Clean, minimal. Same as main but with bottom navigation hidden.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <style name="Theme.FocusGuard.Onboarding" parent="Theme.FocusGuard">
+        <item name="android:windowAnimationStyle">@style/Animation.FocusGuard.Slide</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SHAPE SYSTEM — Extra-rounded corners for calm UI feel
+         ═══════════════════════════════════════════════════════════════════ -->
+    <style name="ShapeAppearance.FocusGuard.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.FocusGuard.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.FocusGuard.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         COMPONENT STYLES
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Card style used throughout FocusGuard — elevated with subtle tint -->
+    <style name="Style.FocusGuard.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">2dp</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="contentPadding">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Primary filled button — used for positive actions -->
+    <style name="Style.FocusGuard.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <!-- Tonal button — used for secondary/neutral actions -->
+    <style name="Style.FocusGuard.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <!-- Text button — for dismiss/skip actions -->
+    <style name="Style.FocusGuard.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <!-- MaterialSwitch overridden for larger touch target in app selector list -->
+    <style name="Style.FocusGuard.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         WINDOW ANIMATIONS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <style name="Animation.FocusGuard.Slide" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+    </style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TEXT APPEARANCES (custom overrides for key UI elements)
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- The giant screen time number in the dashboard ring -->
+    <style name="TextAppearance.FocusGuard.ScreenTimeDisplay" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:textSize">48sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <!-- Focus status label below the ring -->
+    <style name="TextAppearance.FocusGuard.StatusLabel" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.0</item>
+    </style>
+
+    <!-- Section headers on the dashboard ("Today's Highlights", etc.) -->
+    <style name="TextAppearance.FocusGuard.SectionHeader" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.06</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Block screen main message -->
+    <style name="TextAppearance.FocusGuard.BlockTitle" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:textSize">34sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/block_screen_text_primary</item>
+    </style>
+
+</resources>

@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — AndroidManifest.xml
+    ══════════════════════════════════════════════════════════════════════════
+    Permission Audit & Justification:
+    ══════════════════════════════════════════════════════════════════════════
+
+    PACKAGE_USAGE_STATS
+      ↳ Special permission — user must grant via Settings > Digital Wellbeing
+        or Settings > Apps > Special App Access > Usage Access.
+      ↳ Required to read which app is currently active via UsageStatsManager.
+      ↳ Cannot be granted via runtime dialog. Must deep-link to settings screen.
+
+    SYSTEM_ALERT_WINDOW (Display over other apps)
+      ↳ Special permission — user grants via Settings > Apps > Special Access.
+      ↳ Required for BlockScreenActivity to overlay on top of any app.
+      ↳ On Android 12+, this permission has been tightened. The overlay window
+        must use TYPE_APPLICATION_OVERLAY (not deprecated TYPE_PHONE/SYSTEM).
+
+    FOREGROUND_SERVICE + FOREGROUND_SERVICE_SPECIAL_USE
+      ↳ FOREGROUND_SERVICE: Allows the FocusTrackerService to run persistently
+        in the foreground with a persistent notification (Android 9+ requirement).
+      ↳ FOREGROUND_SERVICE_SPECIAL_USE: Required on Android 14+ for any foreground
+        service not covered by a specific type. Declared here as a fallback.
+      ↳ Note: We also declare FOREGROUND_SERVICE_DATA_SYNC as the service performs
+        continuous data monitoring — this aligns with Play Store policy.
+
+    POST_NOTIFICATIONS
+      ↳ Runtime permission required on Android 13+ (API 33+).
+      ↳ Required to show the persistent "FocusGuard is active" notification
+        that all foreground services must display.
+      ↳ Requested at runtime during onboarding.
+
+    RECEIVE_BOOT_COMPLETED
+      ↳ Normal permission — auto-granted, no user interaction needed.
+      ↳ Allows FocusGuard to restart the tracking service after device reboot.
+      ↳ Critical for uninterrupted wellbeing tracking.
+
+    REQUEST_INSTALL_PACKAGES
+      ↳ NOT included intentionally — FocusGuard never installs packages.
+        Including unnecessary permissions reduces user trust and Play Store risk.
+    ══════════════════════════════════════════════════════════════════════════
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.focusguard.app.debug"
+    android:versionCode="1"
+    android:versionName="1.0.0" >
+
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="34" />
+
+    <!--
+         ══════════════════════════════════════════════════════════════════════
+         PERMISSIONS
+         ══════════════════════════════════════════════════════════════════════
+    -->
+
+
+    <!--
+        USAGE STATS ACCESS — The core permission of this entire app.
+        This is a "privileged" permission that requires manual user grant.
+        It is NOT a dangerous permission (no runtime dialog).
+        We guide the user to the system settings page during onboarding.
+    -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+
+    <!--
+        DRAW OVER OTHER APPS — Required for the blocking overlay.
+        Android docs call this "SYSTEM_ALERT_WINDOW".
+        Required for BlockScreenActivity to appear over the distraction app.
+        User grants this manually: Settings → Apps → FocusGuard → Draw over apps
+    -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!--
+        FOREGROUND SERVICE — Required for FocusTrackerService to run persistently.
+        Without this, Android will kill our tracking service in the background.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!--
+        POST NOTIFICATIONS — Runtime permission for Android 13+.
+        Required to show the persistent "FocusGuard Active" foreground notification.
+        Without this notification, the foreground service cannot run on Android 13+.
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        BOOT COMPLETED — Auto-granted normal permission.
+        Allows BootReceiver to restart FocusTrackerService after device reboot.
+    -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!--
+        VIBRATE — For gentle haptic feedback when the block screen appears.
+        Normal permission, auto-granted.
+    -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!--
+        WAKE LOCK — Prevents CPU from sleeping while we calculate usage stats.
+        Used briefly inside FocusTrackerService during ML inference only.
+    -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <permission
+        android:name="com.focusguard.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.focusguard.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <!--
+ ══════════════════════════════════════════════════════════════════════
+         APPLICATION
+         ══════════════════════════════════════════════════════════════════════
+    -->
+    <application
+        android:name="com.focusguard.app.FocusGuardApp"
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:debuggable="true"
+        android:enableOnBackInvokedCallback="true"
+        android:extractNativeLibs="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:testOnly="true"
+        android:theme="@style/Theme.FocusGuard" >
+
+        <!--
+             ══════════════════════════════════════════════════════════════════
+             ACTIVITIES
+             ══════════════════════════════════════════════════════════════════
+        -->
+
+
+        <!--
+            MainActivity — The main dashboard.
+            Launcher activity with a singleTask launch mode to prevent duplicate
+            instances when the user returns via the notification tap.
+        -->
+        <activity
+            android:name="com.focusguard.app.ui.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            AppSelectorActivity — "Focus Breakers" screen.
+            User selects which apps they want FocusGuard to monitor.
+        -->
+        <activity
+            android:name="com.focusguard.app.ui.AppSelectorActivity"
+            android:exported="false"
+            android:label="@string/focus_breakers_title"
+            android:parentActivityName="com.focusguard.app.ui.MainActivity" />
+
+        <!--
+            SettingsActivity — "AI Control Center".
+            User adjusts the AI strictness slider.
+        -->
+        <activity
+            android:name="com.focusguard.app.ui.SettingsActivity"
+            android:exported="false"
+            android:label="@string/settings_title"
+            android:parentActivityName="com.focusguard.app.ui.MainActivity" />
+
+<!--             OnboardingActivity — First-run permission setup wizard. -->
+        <activity
+            android:name="com.focusguard.app.ui.OnboardingActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" />
+
+        <!--
+            BlockScreenActivity — THE MOST CRITICAL ACTIVITY.
+
+            This is the full-screen overlay that covers distraction apps.
+
+            Key attributes explained:
+            ──────────────────────────────────────────────────────────────────
+            android:theme="@style/Theme.FocusGuard.BlockScreen"
+              → Transparent, no action bar, full screen. Allows the overlay
+                to appear on top of everything with a custom dim effect.
+
+            android:excludeFromRecents="true"
+              → This activity should NOT appear in the recent apps switcher.
+                Without this, users would see a confusing extra entry.
+
+            android:noHistory="true"
+              → BlockScreen should never be kept in the back stack.
+                Pressing Back should never navigate INTO a previous block screen.
+
+            android:taskAffinity=""
+              → Runs in its own task, isolated from both FocusGuard's main task
+                and the distracting app's task. This is essential for the overlay
+                to work correctly as a system-level alert window.
+
+            android:showOnLockScreen="true" + android:turnScreenOn="true"
+              → Allows the block to appear even if the screen just turned on.
+                Prevents users from locking/unlocking to bypass the block.
+
+            android:launchMode="singleInstance"
+              → Prevents duplicate block screens from stacking up if the
+                FocusTrackerService fires multiple times rapidly.
+            ──────────────────────────────────────────────────────────────────
+        -->
+        <activity
+            android:name="com.focusguard.app.ui.BlockScreenActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:showOnLockScreen="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.FocusGuard.BlockScreen"
+            android:turnScreenOn="true" />
+
+        <!--
+             ══════════════════════════════════════════════════════════════════
+             SERVICES
+             ══════════════════════════════════════════════════════════════════
+        -->
+
+
+        <!--
+            FocusTrackerService — The heart of FocusGuard.
+
+            This foreground service:
+              1. Polls UsageStatsManager.queryEvents() every second
+              2. Tracks ACTIVITY_RESUMED / ACTIVITY_PAUSED events precisely
+              3. Feeds live usage data into MLPredictor
+              4. Triggers BlockScreenActivity when risk threshold is exceeded
+
+            android:foregroundServiceType="dataSync"
+              → Required on Android 10+. "dataSync" is the appropriate type
+                for a service that continuously reads and processes app usage data.
+                Declared here to match the permission in the <uses-permission> tag.
+
+            android:stopWithTask="false"
+              → Service continues running even when the user swipes away the app
+                from recents. This is intentional — tracking must be persistent.
+        -->
+        <service
+            android:name="com.focusguard.app.service.FocusTrackerService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false" />
+
+        <!--
+             ══════════════════════════════════════════════════════════════════
+             BROADCAST RECEIVERS
+             ══════════════════════════════════════════════════════════════════
+        -->
+
+
+        <!--
+            BootReceiver — Restarts FocusTrackerService after device reboot.
+
+            android:enabled="true" → Receiver is active.
+            android:exported="true" → MUST be true to receive system broadcasts
+              like BOOT_COMPLETED. Android lint will warn about this but it is
+              required. The intent-filter restricts to specific system actions.
+              directBootAware="false" means it fires after the user unlocks
+              (appropriate — we don't want to track before user session starts).
+        -->
+        <receiver
+            android:name="com.focusguard.app.receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter android:priority="999" >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+<!--             DailySummaryReceiver — Triggered by WorkManager for daily summaries. -->
+        <receiver
+            android:name="com.focusguard.app.receiver.DailySummaryReceiver"
+            android:exported="false" />
+
+        <!--
+             ══════════════════════════════════════════════════════════════════
+             PROVIDER
+             ══════════════════════════════════════════════════════════════════
+        -->
+
+
+        <!--
+            Room Database FileProvider — not strictly needed for FocusGuard v1
+            but included as a safe scaffolding placeholder for future export
+            of usage reports to the file system.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.focusguard.app.debug.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.focusguard.app.debug.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
+
+        <uses-library
+            android:name="androidx.window.extensions"
+            android:required="false" />
+        <uses-library
+            android:name="androidx.window.sidecar"
+            android:required="false" />
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

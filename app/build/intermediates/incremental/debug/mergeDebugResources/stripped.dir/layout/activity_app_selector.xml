@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/layout/activity_app_selector.xml
+    ════════════════════════════════════════════════════════════════════════
+    "Focus Breakers" Screen
+
+    UX Brief:
+      This is where users curate their personal list of distracting apps.
+      The language is intentionally personal and non-judgmental:
+        ✗ "Configure monitored packages"
+        ✓ "Tell the AI which apps tend to distract you."
+
+      Design decisions:
+        - SearchBar at the top (Material 3 SearchBar, not EditText)
+          for instant filtering — installed app lists can be 100+ items
+        - RecyclerView with LinearLayoutManager for the app list
+        - Empty state view with a friendly illustration + CTA
+        - FAB for "Add an app" — clear, single primary action
+        - Each item uses item_app_card.xml (separate file below)
+        - Monitored count chip at the top of the list area
+    ════════════════════════════════════════════════════════════════════════
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator_app_selector"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.AppSelectorActivity">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         TOP APP BAR
+         ══════════════════════════════════════════════════════════════════ -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recycler_tracked_apps">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationContentDescription="@string/action_back"
+            app:title="@string/focus_breakers_title" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MAIN CONTENT
+         ══════════════════════════════════════════════════════════════════ -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- ── Subtitle / instructions ── -->
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/focus_breakers_subtitle"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- ── Monitored count chip ── -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_monitored_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/focus_breakers_monitored_count_single"
+            style="@style/Widget.Material3.Chip.Filter"
+            app:chipBackgroundColor="?attr/colorPrimaryContainer"
+            app:chipStrokeWidth="0dp"
+            app:ensureMinTouchTargetSize="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
+            tools:text="3 apps being watched" />
+
+        <!-- ══════════════════════════════════════════════════════
+             EMPTY STATE — shown when no apps are tracked yet
+             Hidden (GONE) when the list has items.
+             ══════════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/layout_empty_state"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chip_monitored_count"
+            app:layout_constraintVertical_bias="0.4"
+            tools:visibility="visible">
+
+            <!-- Empty state illustration -->
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginBottom="24dp"
+                android:contentDescription="@null"
+                android:alpha="0.6"
+                android:src="@drawable/ic_empty_apps" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/focus_breakers_empty_title"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="?attr/colorOnBackground" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/focus_breakers_empty_body"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant" />
+
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════════════════════
+             TRACKED APPS RECYCLER VIEW
+             Shown when there are tracked apps. GONE when empty.
+             ══════════════════════════════════════════════════════ -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_tracked_apps"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chip_monitored_count"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_app_card" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         FAB — "Add an app"
+         Extended FAB is more accessible and descriptive than an icon-only FAB.
+         It collapses to icon-only on scroll via the CoordinatorLayout behavior.
+         ══════════════════════════════════════════════════════════════════ -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_add_app"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        android:text="@string/focus_breakers_add_button"
+        app:icon="@drawable/ic_add" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

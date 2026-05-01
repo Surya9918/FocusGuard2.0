@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/layout/layout_block_screen.xml
+    ════════════════════════════════════════════════════════════════════════
+    Block Screen Overlay
+
+    This is the full-screen overlay that appears OVER the distraction app.
+    It is the most emotionally-charged screen in the app — it must be:
+      ✓ Firm enough to interrupt the distraction habit
+      ✓ Calm enough not to cause anxiety or frustration
+      ✓ Non-judgmental (the user isn't being "punished")
+      ✓ Actionable (two clear choices: leave the app, or snooze briefly)
+
+    Visual Design Rationale:
+      - Deep midnight-blue background (#0D0D1A) — calm, meditative, not harsh
+      - A large shield icon in a soft purple glow — protective, not alarming
+      - Large, light-weight display text: "Time to focus." — simple and clear
+      - A secondary line explaining what happened (what app, for how long)
+      - A rotating encouragement quote (5 different messages, picked randomly)
+      - Two buttons:
+          Primary: "Close the app" → bold, easy to tap, what we want them to do
+          Secondary: "Give me 5 more minutes" → available but de-emphasized,
+                     uses a text button style so it doesn't feel like the right choice
+      - Snooze counter warning: after 2 snoozes, a gentle nudge appears
+
+    Accessibility:
+      - contentDescription on all icon ImageViews
+      - Minimum 48dp touch targets on both buttons
+      - High contrast text (#F0EEFF on #0D0D1A = 15.4:1 contrast ratio)
+    ════════════════════════════════════════════════════════════════════════
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/block_screen_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/block_screen_background"
+    android:fitsSystemWindows="false">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         BACKGROUND — Subtle radial gradient effect using a decorative view.
+         The large circle behind the icon creates a soft "glow" that makes
+         the otherwise stark dark screen feel inviting rather than punitive.
+         ══════════════════════════════════════════════════════════════════ -->
+    <View
+        android:id="@+id/view_glow_bg"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:alpha="0.15"
+        android:background="@drawable/bg_circle_glow"
+        app:layout_constraintBottom_toTopOf="@id/tv_block_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.36" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SHIELD ICON — Visual anchor of the block screen
+         Large (80dp), centered, with contentDescription for accessibility.
+         The shield communicates protection, not punishment.
+         ══════════════════════════════════════════════════════════════════ -->
+    <ImageView
+        android:id="@+id/img_shield"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:contentDescription="@string/block_icon_content_desc"
+        android:src="@drawable/ic_shield_focus"
+        app:tint="@color/block_screen_accent"
+        app:layout_constraintBottom_toTopOf="@id/tv_block_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MAIN MESSAGE: "Time to focus."
+         Light-weight display font — commanding but not aggressive.
+         ══════════════════════════════════════════════════════════════════ -->
+    <TextView
+        android:id="@+id/tv_block_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/block_title"
+        android:textAppearance="@style/TextAppearance.FocusGuard.BlockTitle"
+        app:layout_constraintBottom_toTopOf="@id/tv_block_subtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_shield" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SUBTITLE: "You've been on a distracting app for a while."
+         ══════════════════════════════════════════════════════════════════ -->
+    <TextView
+        android:id="@+id/tv_block_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="@string/block_subtitle"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:textColor="@color/block_screen_text_secondary"
+        android:lineSpacingMultiplier="1.4"
+        app:layout_constraintBottom_toTopOf="@id/card_app_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_block_title" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         APP INFO CARD — "You were using [app icon] Instagram for 34 mins"
+         A small rounded card that contextualizes the block — it shows
+         the user which specific app triggered it and for how long.
+         ══════════════════════════════════════════════════════════════════ -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_app_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:cardBackgroundColor="@color/block_screen_surface"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#33FFFFFF"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_encouragement"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_block_subtitle">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp">
+
+            <!-- "You were using" label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="@string/block_app_label"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="@color/block_screen_text_secondary" />
+
+            <!-- Blocked app icon -->
+            <ImageView
+                android:id="@+id/img_blocked_app_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_app_placeholder" />
+
+            <!-- Blocked app name -->
+            <TextView
+                android:id="@+id/tv_blocked_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="@color/block_screen_text_primary"
+                android:fontFamily="sans-serif-medium"
+                tools:text="Instagram" />
+
+            <!-- "for" connector -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:text="@string/block_time_label"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="@color/block_screen_text_secondary" />
+
+            <!-- Duration -->
+            <TextView
+                android:id="@+id/tv_blocked_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="@color/block_screen_accent"
+                android:fontFamily="sans-serif-medium"
+                tools:text="34 mins" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         ENCOURAGEMENT QUOTE
+         Randomly selected from 5 strings in strings.xml.
+         Keeps the block screen feeling fresh and personal.
+         ══════════════════════════════════════════════════════════════════ -->
+    <TextView
+        android:id="@+id/tv_encouragement"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="48dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="@color/block_screen_text_secondary"
+        android:fontFamily="sans-serif-light"
+        android:lineSpacingMultiplier="1.5"
+        android:alpha="0.85"
+        app:layout_constraintBottom_toTopOf="@id/btn_close_app"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_app_info"
+        tools:text="Deep work is just a few seconds away. 💪" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         PRIMARY ACTION: "Close the app"
+         This is the main CTA — we want the user to leave the distraction.
+         Full-width (within margins), prominent filled button.
+         ══════════════════════════════════════════════════════════════════ -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_close_app"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="12dp"
+        android:text="@string/block_cta_close_app"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textColor="@color/block_screen_text_primary"
+        app:backgroundTint="@color/block_screen_accent"
+        app:cornerRadius="16dp"
+        app:elevation="0dp"
+        app:rippleColor="#33FFFFFF"
+        app:layout_constraintBottom_toTopOf="@id/btn_snooze"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_encouragement"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SECONDARY ACTION: "Give me 5 more minutes"
+         De-emphasized text button — it's available, but it's not presented
+         as an equal choice. We want the user to choose "Close the app".
+         ══════════════════════════════════════════════════════════════════ -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_snooze"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/block_cta_snooze_5"
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:textColor="@color/block_screen_text_secondary"
+        app:backgroundTint="@android:color/transparent"
+        app:rippleColor="#1AFFFFFF"
+        app:strokeWidth="0dp"
+        style="@style/Widget.Material3.Button.TextButton"
+        app:layout_constraintBottom_toTopOf="@id/tv_snooze_warning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SNOOZE WARNING — Only visible after 2+ snoozes
+         Non-judgmental but honest: "You've snoozed 3 time(s) today."
+         ══════════════════════════════════════════════════════════════════ -->
+    <TextView
+        android:id="@+id/tv_snooze_warning"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="@color/block_screen_text_secondary"
+        android:alpha="0.7"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Snoozing too often can make it harder to focus.\nYou've snoozed 3 time(s) today."
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="block_screen_accent">#8B7FFF</color>
+    <color name="block_screen_background">#0D0D1A</color>
+    <color name="block_screen_button_bg">#3A3A6A</color>
+    <color name="block_screen_surface">#1A1A2E</color>
+    <color name="block_screen_text_primary">#F0EEFF</color>
+    <color name="block_screen_text_secondary">#B0A8D0</color>
+    <color name="md_theme_dark_background">#1C1B1F</color>
+    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_inverseOnSurface">#312F36</color>
+    <color name="md_theme_dark_inversePrimary">#5B5BD6</color>
+    <color name="md_theme_dark_inverseSurface">#E6E1E5</color>
+    <color name="md_theme_dark_onBackground">#E6E1E5</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+    <color name="md_theme_dark_onPrimary">#2300AC</color>
+    <color name="md_theme_dark_onPrimaryContainer">#E3DFFF</color>
+    <color name="md_theme_dark_onSecondary">#302F42</color>
+    <color name="md_theme_dark_onSecondaryContainer">#E4E1F9</color>
+    <color name="md_theme_dark_onSurface">#E6E1E5</color>
+    <color name="md_theme_dark_onSurfaceVariant">#CAC4CF</color>
+    <color name="md_theme_dark_onTertiary">#412D00</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FFDEAA</color>
+    <color name="md_theme_dark_outline">#948F99</color>
+    <color name="md_theme_dark_outlineVariant">#49454E</color>
+    <color name="md_theme_dark_primary">#C4BFFF</color>
+    <color name="md_theme_dark_primaryContainer">#3F38C8</color>
+    <color name="md_theme_dark_scrim">#000000</color>
+    <color name="md_theme_dark_secondary">#C8C3DC</color>
+    <color name="md_theme_dark_secondaryContainer">#474559</color>
+    <color name="md_theme_dark_surface">#1C1B1F</color>
+    <color name="md_theme_dark_surfaceTint">#C4BFFF</color>
+    <color name="md_theme_dark_surfaceVariant">#49454E</color>
+    <color name="md_theme_dark_tertiary">#F5BB4B</color>
+    <color name="md_theme_dark_tertiaryContainer">#5D4100</color>
+    <color name="md_theme_light_background">#FFFBFF</color>
+    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_errorContainer">#FFDAD6</color>
+    <color name="md_theme_light_inverseOnSurface">#F4EFF7</color>
+    <color name="md_theme_light_inversePrimary">#C4BFFF</color>
+    <color name="md_theme_light_inverseSurface">#312F36</color>
+    <color name="md_theme_light_onBackground">#1C1B1F</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_onErrorContainer">#410002</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_onPrimaryContainer">#12006E</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_onSecondaryContainer">#1B1A2C</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="md_theme_light_onSurfaceVariant">#49454E</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_onTertiaryContainer">#271900</color>
+    <color name="md_theme_light_outline">#7B757F</color>
+    <color name="md_theme_light_outlineVariant">#CAC4CF</color>
+    <color name="md_theme_light_primary">#5B5BD6</color>
+    <color name="md_theme_light_primaryContainer">#E3DFFF</color>
+    <color name="md_theme_light_scrim">#000000</color>
+    <color name="md_theme_light_secondary">#5E5D72</color>
+    <color name="md_theme_light_secondaryContainer">#E4E1F9</color>
+    <color name="md_theme_light_surface">#FFFBFF</color>
+    <color name="md_theme_light_surfaceTint">#5B5BD6</color>
+    <color name="md_theme_light_surfaceVariant">#E6E0EC</color>
+    <color name="md_theme_light_tertiary">#7B5800</color>
+    <color name="md_theme_light_tertiaryContainer">#FFDEAA</color>
+    <color name="progress_track">#E6E0EC</color>
+    <color name="progress_track_dark">#49454E</color>
+    <color name="scrim_dark_50">#80000000</color>
+    <color name="scrim_light_20">#33000000</color>
+    <color name="slider_balanced">#7B5800</color>
+    <color name="slider_chill">#1B873E</color>
+    <color name="slider_strict">#B02020</color>
+    <color name="status_blocked_rose">#B02020</color>
+    <color name="status_blocked_rose_container">#FFDAD6</color>
+    <color name="status_caution_amber">#7B5800</color>
+    <color name="status_caution_amber_container">#FFDEAA</color>
+    <color name="status_focused_green">#1B873E</color>
+    <color name="status_focused_green_container">#B7F2CC</color>
+    <plurals name="focus_breakers_monitored_count_plural">
+        <item quantity="one">%1$d app being watched</item>
+        <item quantity="other">%1$d apps being watched</item>
+    </plurals>
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_done">Done</string>
+    <string name="action_ok">OK</string>
+    <string name="action_save">Save</string>
+    <string name="action_start_focus">Start Focus Mode</string>
+    <string name="action_stop_focus">Pause Monitoring</string>
+    <string name="app_card_remove_content_desc">Remove %1$s from your list</string>
+    <string name="app_card_risk_high">High risk</string>
+    <string name="app_card_risk_label">AI thinks: </string>
+    <string name="app_card_risk_low">Low risk</string>
+    <string name="app_card_risk_medium">Moderate risk</string>
+    <string name="app_card_switch_label">Is this app a distraction for you?</string>
+    <string name="app_card_switch_off">Not monitoring</string>
+    <string name="app_card_switch_on">Yes, watch this one</string>
+    <string name="app_name">FocusGuard</string>
+    <string name="app_tagline">Your calm, intelligent focus companion</string>
+    <string name="block_app_label">You were using</string>
+    <string name="block_cta_close_app">Close the app</string>
+    <string name="block_cta_snooze_5">Give me 5 more minutes</string>
+    <string name="block_encouragement_1">Deep work is just a few seconds away. 💪</string>
+    <string name="block_encouragement_2">Your future self will thank you. ✨</string>
+    <string name="block_encouragement_3">One small step toward focus. 🎯</string>
+    <string name="block_encouragement_4">You\'re stronger than the scroll. 🌿</string>
+    <string name="block_encouragement_5">Take a breath. The real world is better. 🌅</string>
+    <string name="block_icon_content_desc">Focus shield icon</string>
+    <string name="block_snooze_warning">Snoozing too often can make it harder to focus.\nYou\'ve snoozed %1$d time(s) today.</string>
+    <string name="block_subtitle">You\'ve been on a distracting app for a while.\nYou\'ve got this.</string>
+    <string name="block_time_label">for</string>
+    <string name="block_title">Time to focus.</string>
+    <string name="content_desc_app_icon">App icon for %1$s</string>
+    <string name="dashboard_greeting_afternoon">Good afternoon 🌤️</string>
+    <string name="dashboard_greeting_evening">Good evening 🌙</string>
+    <string name="dashboard_greeting_morning">Good morning ☀️</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="focus_breakers_add_button">Add an app</string>
+    <string name="focus_breakers_empty_body">Tap the + button below to choose apps that tend to distract you.</string>
+    <string name="focus_breakers_empty_title">No apps added yet</string>
+    <string name="focus_breakers_monitored_count_single">%1$d app being watched</string>
+    <string name="focus_breakers_search_hint">Search your apps…</string>
+    <string name="focus_breakers_subtitle">Tell the AI which apps tend to distract you.\nIt\'ll watch them closely.</string>
+    <string name="focus_breakers_title">Focus Breakers</string>
+    <string name="focus_score_excellent">Excellent</string>
+    <string name="focus_score_fair">Fair</string>
+    <string name="focus_score_good">Good</string>
+    <string name="focus_score_needs_work">Needs work</string>
+    <string name="highlight_blocks_today">Times FocusGuard helped</string>
+    <string name="highlight_focus_score">Your focus score</string>
+    <string name="highlight_most_used_app">Most used app</string>
+    <string name="highlight_no_data">No activity recorded yet today.</string>
+    <string name="highlight_time_on_distractions">Time on distracting apps</string>
+    <string name="highlights_section_title">Today\'s Highlights</string>
+    <string name="loading">Loading…</string>
+    <string name="nav_ai_settings">AI Settings</string>
+    <string name="nav_focus_breakers">Focus Breakers</string>
+    <string name="nav_home">Home</string>
+    <string name="notification_block_body">FocusGuard stepped in to help you refocus.</string>
+    <string name="notification_block_title">Distraction detected</string>
+    <string name="notification_daily_summary_body">You spent %1$s on your phone today. Tap to see your full summary.</string>
+    <string name="notification_daily_summary_title">Your day, in focus 📊</string>
+    <string name="notification_tracking_body">Your screen time is being monitored privately.</string>
+    <string name="notification_tracking_title">FocusGuard is keeping watch 👁️</string>
+    <string name="onboarding_button_get_started">Let\'s go!</string>
+    <string name="onboarding_button_grant_overlay">Allow display over apps</string>
+    <string name="onboarding_button_grant_usage">Grant screen time access</string>
+    <string name="onboarding_button_next">Next</string>
+    <string name="onboarding_how_it_works_body">You tell us which apps tend to distract you. Our AI watches for habits like late-night scrolling or long binge sessions, and quietly intervenes when needed.</string>
+    <string name="onboarding_how_it_works_title">How it works</string>
+    <string name="onboarding_permissions_body">FocusGuard needs two things to work:\n\n• See which app you\'re using (stays private, never shared)\n• Show a screen on top of apps when you need a nudge</string>
+    <string name="onboarding_permissions_title">Two quick permissions</string>
+    <string name="onboarding_skip">Skip for now</string>
+    <string name="onboarding_welcome_body">FocusGuard uses AI to help you notice when you\'re getting distracted — and gently steps in before it gets out of hand.</string>
+    <string name="onboarding_welcome_title">Welcome to FocusGuard 🛡️</string>
+    <string name="picker_already_added">Already in your list</string>
+    <string name="picker_empty">No apps found</string>
+    <string name="picker_search_hint">Search installed apps…</string>
+    <string name="picker_title">Choose an app to watch</string>
+    <string name="screen_time_format_hours">%1$dh %2$dm</string>
+    <string name="screen_time_format_mins">%1$dm</string>
+    <string name="screen_time_goal_label">Daily goal: %1$s</string>
+    <string name="screen_time_ring_label">Screen Time Today</string>
+    <string name="screen_time_zero">Just getting started</string>
+    <string name="service_active">● FocusGuard Active</string>
+    <string name="service_inactive">○ Monitoring paused</string>
+    <string name="settings_ai_section">How the AI Works</string>
+    <string name="settings_clear_data">Clear all my data</string>
+    <string name="settings_clear_data_confirm_body">This will delete all your screen time history. This cannot be undone.</string>
+    <string name="settings_clear_data_confirm_no">Never mind</string>
+    <string name="settings_clear_data_confirm_title">Clear all data?</string>
+    <string name="settings_clear_data_confirm_yes">Yes, clear everything</string>
+    <string name="settings_daily_goal_none">No goal set</string>
+    <string name="settings_daily_goal_section">Daily Screen Time Goal</string>
+    <string name="settings_daily_goal_subtitle">FocusGuard will show you a gentle warning as you get close.</string>
+    <string name="settings_daily_goal_title">What\'s your daily screen time goal?</string>
+    <string name="settings_daily_goal_value">%1$d hours</string>
+    <string name="settings_notification_daily_summary">Send me a daily check-in</string>
+    <string name="settings_notification_daily_summary_sub">A short summary of your screen time each evening.</string>
+    <string name="settings_notification_reminders">Send me focus reminders</string>
+    <string name="settings_notification_reminders_sub">Gentle nudges when you\'ve been on your phone too long.</string>
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_permission_button_grant">Grant</string>
+    <string name="settings_permission_notifications_sub_granted">✓ Granted</string>
+    <string name="settings_permission_notifications_sub_missing">Optional — Tap to allow focus reminders.</string>
+    <string name="settings_permission_notifications_title">Notifications</string>
+    <string name="settings_permission_overlay_sub_granted">✓ Granted — FocusGuard can show its focus screen.</string>
+    <string name="settings_permission_overlay_sub_missing">⚠ Required — Tap to grant in Settings.</string>
+    <string name="settings_permission_overlay_title">Display over other apps</string>
+    <string name="settings_permission_usage_sub_granted">✓ Granted — FocusGuard can see which apps you\'re using.</string>
+    <string name="settings_permission_usage_sub_missing">⚠ Required — Tap to grant in Settings.</string>
+    <string name="settings_permission_usage_title">Screen time access</string>
+    <string name="settings_permissions_section">App Permissions</string>
+    <string name="settings_privacy_data_local">All data stays on your phone</string>
+    <string name="settings_privacy_data_local_sub">FocusGuard never uploads your usage data anywhere.</string>
+    <string name="settings_privacy_section">Privacy</string>
+    <string name="settings_strictness_balanced">Balanced</string>
+    <string name="settings_strictness_chill">Chill</string>
+    <string name="settings_strictness_desc_balanced">A healthy middle ground. The AI will step in after a moderate amount of distraction time.</string>
+    <string name="settings_strictness_desc_chill">The AI only steps in when you\'ve been distracted for a long time. Good for a relaxed day.</string>
+    <string name="settings_strictness_desc_strict">The AI steps in quickly and firmly. Best for when you really need to focus.</string>
+    <string name="settings_strictness_strict">Strict</string>
+    <string name="settings_strictness_subtitle">This controls how quickly FocusGuard steps in when it detects a distraction.</string>
+    <string name="settings_strictness_title">How strict should the AI be?</string>
+    <string name="settings_title">AI Settings</string>
+    <string name="status_all_good">You\'re doing great! 🎯</string>
+    <string name="status_all_good_sub">Keep up the good work today.</string>
+    <string name="status_blocked">FocusGuard stepped in 🛡️</string>
+    <string name="status_blocked_sub">FocusGuard blocked a distraction for you.</string>
+    <string name="status_slight_drift">You\'re drifting a little</string>
+    <string name="status_slight_drift_sub">A small break is fine. Try to refocus soon.</string>
+    <string name="status_tracking_off">Tracking is paused</string>
+    <string name="status_watch_out">Watch out — distractions nearby</string>
+    <string name="status_watch_out_sub">You\'ve been on a distracting app for a while.</string>
+    <style name="Animation.FocusGuard.Slide" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+    </style>
+    <style name="ShapeAppearance.FocusGuard.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ShapeAppearance.FocusGuard.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.FocusGuard.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="Style.FocusGuard.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelLarge</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+    <style name="Style.FocusGuard.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+    <style name="Style.FocusGuard.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+    <style name="Style.FocusGuard.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">2dp</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="contentPadding">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+    <style name="Style.FocusGuard.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:minHeight">48dp</item>
+    </style>
+    <style name="TextAppearance.FocusGuard.BlockTitle" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:textSize">34sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/block_screen_text_primary</item>
+    </style>
+    <style name="TextAppearance.FocusGuard.ScreenTimeDisplay" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:textSize">48sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+    <style name="TextAppearance.FocusGuard.SectionHeader" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.06</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="TextAppearance.FocusGuard.StatusLabel" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.0</item>
+    </style>
+    <style name="Theme.FocusGuard" parent="Theme.Material3.Light.NoActionBar">
+
+        
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+
+        
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+
+        
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+
+        
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+
+        
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+
+        
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_light_outlineVariant</item>
+
+        
+        
+
+        
+        
+
+        
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" ns1:targetApi="27">true</item>
+
+        
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:enforceStatusBarContrast" ns1:targetApi="29">false</item>
+        <item name="android:enforceNavigationBarContrast" ns1:targetApi="29">false</item>
+
+        
+        
+        
+
+        
+        
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.FocusGuard.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.FocusGuard.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.FocusGuard.Large</item>
+
+        
+        
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
+    </style>
+    <style name="Theme.FocusGuard.BlockScreen" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        <item name="android:colorBackground">@color/block_screen_background</item>
+        <item name="colorSurface">@color/block_screen_surface</item>
+        <item name="colorPrimary">@color/block_screen_accent</item>
+        <item name="colorOnPrimary">@color/block_screen_text_primary</item>
+        <item name="colorOnBackground">@color/block_screen_text_primary</item>
+
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+
+        
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.7</item>
+    </style>
+    <style name="Theme.FocusGuard.Onboarding" parent="Theme.FocusGuard">
+        <item name="android:windowAnimationStyle">@style/Animation.FocusGuard.Slide</item>
+    </style>
+    <declare-styleable name="SettingsRow">
+        <attr format="reference" name="iconDrawable"/>
+    </declare-styleable>
+</resources>

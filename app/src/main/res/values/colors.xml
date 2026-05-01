@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    FocusGuard — res/values/colors.xml
+    ════════════════════════════════════════════════════════════════════════
+    Color Philosophy:
+      A wellbeing app must feel calm, trustworthy, and non-alarming.
+      Research on digital health UX shows that:
+        - Muted purples/indigos reduce anxiety vs. aggressive reds
+        - Soft greens reinforce positive "focused" states
+        - Warm ambers signal caution without panic (better than pure red)
+        - High-contrast text on mid-tone surfaces improves readability
+
+    This palette uses Material Design 3's tonal system:
+      Primary   → Soft indigo/violet  (calm focus, trust)
+      Secondary → Muted teal          (serenity, balance)
+      Tertiary  → Warm amber          (gentle warning)
+      Error     → Muted rose          (softer than harsh red)
+
+    All colors are defined as both light and dark variants.
+    Dynamic color (Android 12+) will override these with wallpaper-based
+    tones automatically — these are the static fallbacks.
+    ════════════════════════════════════════════════════════════════════════
+-->
+<resources>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PRIMARY — Soft Indigo (calm focus, brand identity)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <color name="md_theme_light_primary">#5B5BD6</color>              <!-- Primary button, FAB -->
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>            <!-- Text on primary -->
+    <color name="md_theme_light_primaryContainer">#E3DFFF</color>     <!-- Chip background, subtle fill -->
+    <color name="md_theme_light_onPrimaryContainer">#12006E</color>   <!-- Text on primary container -->
+
+    <color name="md_theme_dark_primary">#C4BFFF</color>
+    <color name="md_theme_dark_onPrimary">#2300AC</color>
+    <color name="md_theme_dark_primaryContainer">#3F38C8</color>
+    <color name="md_theme_dark_onPrimaryContainer">#E3DFFF</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECONDARY — Muted Teal (serenity, balance indicator)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <color name="md_theme_light_secondary">#5E5D72</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#E4E1F9</color>
+    <color name="md_theme_light_onSecondaryContainer">#1B1A2C</color>
+
+    <color name="md_theme_dark_secondary">#C8C3DC</color>
+    <color name="md_theme_dark_onSecondary">#302F42</color>
+    <color name="md_theme_dark_secondaryContainer">#474559</color>
+    <color name="md_theme_dark_onSecondaryContainer">#E4E1F9</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         TERTIARY — Warm Amber (gentle caution for distraction warnings)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <color name="md_theme_light_tertiary">#7B5800</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#FFDEAA</color>
+    <color name="md_theme_light_onTertiaryContainer">#271900</color>
+
+    <color name="md_theme_dark_tertiary">#F5BB4B</color>
+    <color name="md_theme_dark_onTertiary">#412D00</color>
+    <color name="md_theme_dark_tertiaryContainer">#5D4100</color>
+    <color name="md_theme_dark_onTertiaryContainer">#FFDEAA</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ERROR — Muted Rose (softer than harsh red for block screen)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_errorContainer">#FFDAD6</color>
+    <color name="md_theme_light_onErrorContainer">#410002</color>
+
+    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SURFACE & BACKGROUND
+         ═══════════════════════════════════════════════════════════════════ -->
+    <color name="md_theme_light_background">#FFFBFF</color>
+    <color name="md_theme_light_onBackground">#1C1B1F</color>
+    <color name="md_theme_light_surface">#FFFBFF</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="md_theme_light_surfaceVariant">#E6E0EC</color>
+    <color name="md_theme_light_onSurfaceVariant">#49454E</color>
+    <color name="md_theme_light_outline">#7B757F</color>
+    <color name="md_theme_light_outlineVariant">#CAC4CF</color>
+    <color name="md_theme_light_inverseSurface">#312F36</color>
+    <color name="md_theme_light_inverseOnSurface">#F4EFF7</color>
+    <color name="md_theme_light_inversePrimary">#C4BFFF</color>
+    <color name="md_theme_light_surfaceTint">#5B5BD6</color>
+    <color name="md_theme_light_scrim">#000000</color>
+
+    <color name="md_theme_dark_background">#1C1B1F</color>
+    <color name="md_theme_dark_onBackground">#E6E1E5</color>
+    <color name="md_theme_dark_surface">#1C1B1F</color>
+    <color name="md_theme_dark_onSurface">#E6E1E5</color>
+    <color name="md_theme_dark_surfaceVariant">#49454E</color>
+    <color name="md_theme_dark_onSurfaceVariant">#CAC4CF</color>
+    <color name="md_theme_dark_outline">#948F99</color>
+    <color name="md_theme_dark_outlineVariant">#49454E</color>
+    <color name="md_theme_dark_inverseSurface">#E6E1E5</color>
+    <color name="md_theme_dark_inverseOnSurface">#312F36</color>
+    <color name="md_theme_dark_inversePrimary">#5B5BD6</color>
+    <color name="md_theme_dark_surfaceTint">#C4BFFF</color>
+    <color name="md_theme_dark_scrim">#000000</color>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SEMANTIC / CUSTOM COLORS
+         Used directly in layouts for specific UI states
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Focus status ring: green = good, amber = caution, rose = blocked -->
+    <color name="status_focused_green">#1B873E</color>
+    <color name="status_focused_green_container">#B7F2CC</color>
+    <color name="status_caution_amber">#7B5800</color>
+    <color name="status_caution_amber_container">#FFDEAA</color>
+    <color name="status_blocked_rose">#B02020</color>
+    <color name="status_blocked_rose_container">#FFDAD6</color>
+
+    <!-- Block screen specific — deep midnight with subtle purple tint -->
+    <color name="block_screen_background">#0D0D1A</color>
+    <color name="block_screen_surface">#1A1A2E</color>
+    <color name="block_screen_text_primary">#F0EEFF</color>
+    <color name="block_screen_text_secondary">#B0A8D0</color>
+    <color name="block_screen_button_bg">#3A3A6A</color>
+    <color name="block_screen_accent">#8B7FFF</color>
+
+    <!-- Progress ring track (unfilled portion) -->
+    <color name="progress_track">#E6E0EC</color>
+    <color name="progress_track_dark">#49454E</color>
+
+    <!-- Slider colors for the strictness control -->
+    <color name="slider_chill">#1B873E</color>
+    <color name="slider_balanced">#7B5800</color>
+    <color name="slider_strict">#B02020</color>
+
+    <!-- Transparent overlays -->
+    <color name="scrim_dark_50">#80000000</color>
+    <color name="scrim_light_20">#33000000</color>
+
+</resources>

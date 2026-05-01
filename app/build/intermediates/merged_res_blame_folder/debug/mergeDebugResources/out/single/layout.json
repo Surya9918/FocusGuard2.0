@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "com.focusguard.app-mergeDebugResources-47:/layout/activity_onboarding.xml",
+        "source": "com.focusguard.app-main-50:/layout/activity_onboarding.xml"
+    },
+    {
+        "merged": "com.focusguard.app-mergeDebugResources-47:/layout/activity_app_selector.xml",
+        "source": "com.focusguard.app-main-50:/layout/activity_app_selector.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\activity_settings.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\layout_app_picker_sheet.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\layout_app_picker_sheet.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\layout_block_screen.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\layout_block_screen.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\activity_app_selector.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_app_selector.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\activity_onboarding.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_onboarding.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\item_app_card.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\item_app_card.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-mergeDebugResources-47:\\layout\\item_permission_row.xml",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\item_permission_row.xml"
+    }
+]

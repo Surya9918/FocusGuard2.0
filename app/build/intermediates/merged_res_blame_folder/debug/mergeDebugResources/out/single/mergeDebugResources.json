@@ -1,0 +1,134 @@
+[
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_activity_settings.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\xml_file_paths.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\xml\\file_paths.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_ai_settings.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_ai_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\anim_slide_out_right.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\anim\\slide_out_right.xml"
+    },
+    {
+        "merged": "com.focusguard.app-debug-48:/layout_activity_app_selector.xml.flat",
+        "source": "com.focusguard.app-main-50:/layout/activity_app_selector.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_check_circle.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_check_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_add.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_add.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_empty_apps.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_empty_apps.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\xml_data_extraction_rules.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\xml\\data_extraction_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\anim_slide_in_right.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\anim\\slide_in_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_layout_block_screen.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\layout_block_screen.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_activity_onboarding.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_onboarding.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_bg_circle_glow.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\bg_circle_glow.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\menu_menu_main.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\menu\\menu_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_layout_app_picker_sheet.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\layout_app_picker_sheet.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_home.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_focus_breakers.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_focus_breakers.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\menu_menu_bottom_nav.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\menu\\menu_bottom_nav.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\anim_slide_out_left.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\anim\\slide_out_left.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_back.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_back.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_shield_focus.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_shield_focus.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_activity_app_selector.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\activity_app_selector.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_app_placeholder.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_app_placeholder.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_delete.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_delete.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_item_permission_row.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\item_permission_row.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\anim_slide_in_left.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\anim\\slide_in_left.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\drawable_ic_lock.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\drawable\\ic_lock.xml"
+    },
+    {
+        "merged": "com.focusguard.app-debug-48:/layout_activity_onboarding.xml.flat",
+        "source": "com.focusguard.app-main-50:/layout/activity_onboarding.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\layout_item_app_card.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\layout\\item_app_card.xml"
+    },
+    {
+        "merged": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-debug-48:\\xml_backup_rules.xml.flat",
+        "source": "C:\\Users\\dell\\.gradle\\daemon\\9.0.0\\com.focusguard.app-main-50:\\xml\\backup_rules.xml"
+    }
+]
