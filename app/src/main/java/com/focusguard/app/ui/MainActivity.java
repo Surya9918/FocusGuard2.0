@@ -62,10 +62,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, AppSelectorActivity.class));
                 return true;
             } else if (id == R.id.nav_ai_settings) {
-                // Launch the new Flutter-powered AI Insights screen
+                // Launch the custom Flutter Activity that handles MethodChannels
                 startActivity(
                     FlutterActivity.withNewEngine()
                         .initialRoute("/")
+                        .activityClass(AiInsightsActivity.class)
                         .build(this)
                 );
                 return true;

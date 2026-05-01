@@ -21,8 +21,37 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AiInsightsScreen extends StatelessWidget {
+class AiInsightsScreen extends StatefulWidget {
   const AiInsightsScreen({super.key});
+
+  @override
+  State<AiInsightsScreen> createState() => _AiInsightsScreenState();
+}
+
+class _AiInsightsScreenState extends State<AiInsightsScreen> {
+  static const platform = MethodChannel('com.focusguard.app/stats');
+  
+  Map<String, dynamic>? _stats;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDailyStats();
+  }
+
+  Future<void> _loadDailyStats() async {
+    try {
+      final Map<dynamic, dynamic> result = await platform.invokeMethod('getDailyStats');
+      setState(() {
+        _stats = Map<String, dynamic>.from(result);
+        _isLoading = false;
+      });
+    } on PlatformException catch (e) {
+      debugPrint("Failed to get stats: '${e.message}'.");
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,59 +60,74 @@ class AiInsightsScreen extends StatelessWidget {
         title: const Text('AI Focus Insights'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // This will close the Flutter Activity and return to the native side
-            SystemNavigator.pop();
-          },
+          onPressed: () => SystemNavigator.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeaderCard(),
-              const SizedBox(height: 24),
-              const Text(
-                'Deep Analysis',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeaderCard(),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Deep Analysis',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInsightItem(
+                    icon: Icons.trending_up,
+                    color: Colors.green,
+                    title: 'Focus Score: ${_stats?['focusScore'] ?? '--'}/100',
+                    description: _getFocusDescription(_stats?['focusScore'] ?? 0),
+                  ),
+                  _buildInsightItem(
+                    icon: Icons.timer,
+                    color: Colors.blue,
+                    title: 'Usage Summary',
+                    description: 'You have been on screen for ${_formatDuration(_stats?['totalScreenSeconds'] ?? 0)} with ${_stats?['blocksTriggered'] ?? 0} blocks.',
+                  ),
+                  _buildInsightItem(
+                    icon: Icons.warning_amber_rounded,
+                    color: Colors.orange,
+                    title: 'Distraction Time',
+                    description: 'Spent ${_formatDuration(_stats?['distractionSeconds'] ?? 0)} on focus breakers today.',
+                  ),
+                  const SizedBox(height: 32),
+                  Center(
+                    child: OutlinedButton.icon(
+                      onPressed: () => SystemNavigator.pop(),
+                      icon: const Icon(Icons.exit_to_app),
+                      label: const Text('Return to Native App'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              _buildInsightItem(
-                icon: Icons.trending_up,
-                color: Colors.green,
-                title: 'Focus improved by 12%',
-                description: 'You had fewer app-switches today compared to yesterday morning.',
-              ),
-              _buildInsightItem(
-                icon: Icons.warning_amber_rounded,
-                color: Colors.orange,
-                title: 'Context Switching Risk',
-                description: 'You tend to open "Instagram" right after "Slack". Try taking a 5-min break instead.',
-              ),
-              _buildInsightItem(
-                icon: Icons.lightbulb_outline,
-                color: Colors.blue,
-                title: 'Peak Productivity',
-                description: 'Your most focused hours are between 9 AM and 11 AM.',
-              ),
-              const SizedBox(height: 32),
-              Center(
-                child: OutlinedButton.icon(
-                  onPressed: () => SystemNavigator.pop(),
-                  icon: const Icon(Icons.exit_to_app),
-                  label: const Text('Return to Native App'),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
+  String _formatDuration(int seconds) {
+    final minutes = seconds ~/ 60;
+    final hours = minutes ~/ 60;
+    if (hours > 0) {
+      return '${hours}h ${minutes % 60}m';
+    }
+    return '${minutes}m';
+  }
+
+  String _getFocusDescription(int score) {
+    if (score >= 80) return 'Excellent focus! You are managing your time very well today.';
+    if (score >= 50) return 'Good progress, but try to reduce time on distraction apps.';
+    return 'High distraction levels detected. Consider using a Focus Mode.';
+  }
+
   Widget _buildHeaderCard() {
+    final score = _stats?['focusScore'] ?? 0;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -100,13 +144,17 @@ class AiInsightsScreen extends StatelessWidget {
             'AI Focus Score',
             style: TextStyle(fontSize: 18, color: Colors.black54),
           ),
-          const Text(
-            '88/100',
-            style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF6750A4)),
+          Text(
+            '$score/100',
+            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF6750A4)),
           ),
-          const Text(
-            'Excellent Resilience',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.green),
+          Text(
+            score >= 80 ? 'Excellent Resilience' : (score >= 50 ? 'Steady Progress' : 'Needs Attention'),
+            style: TextStyle(
+              fontSize: 16, 
+              fontWeight: FontWeight.w500, 
+              color: score >= 80 ? Colors.green : (score >= 50 ? Colors.blue : Colors.orange)
+            ),
           ),
         ],
       ),
