@@ -57,7 +57,8 @@ public class ReleaseSmokeTest {
     @Test
     public void roomWritesAndClearsLocalHistory() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (AppDatabase database = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build()) {
+        AppDatabase database = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+        try {
             String date = "2026-11-24";
             String packageName = "com.example.focusbreaker";
             AppUsageRecord usage = new AppUsageRecord(packageName, "Example",
@@ -76,6 +77,8 @@ public class ReleaseSmokeTest {
             database.clearAllTables();
             assertNull(database.dailyStatsDao().getStatsForDate(date));
             assertEquals(0, database.trackedAppDao().getMonitoredApps().size());
+        } finally {
+            database.close();
         }
     }
 }
