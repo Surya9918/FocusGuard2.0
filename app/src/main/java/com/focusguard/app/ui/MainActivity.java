@@ -24,8 +24,6 @@ import com.focusguard.app.service.TrackingState;
 
 import java.time.LocalDate;
 
-import io.flutter.embedding.android.FlutterActivity;
-
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private LiveData<DailyStats> stats;
@@ -54,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.nav_focus_breakers) {
                 startActivity(new Intent(this, AppSelectorActivity.class));
             } else if (item.getItemId() == R.id.nav_ai_settings) {
-                startActivity(FlutterActivity.withNewEngine()
-                        .activityClass(AiInsightsActivity.class).build(this));
+                startActivity(new Intent(this, AiInsightsActivity.class));
             } else {
                 return true;
             }

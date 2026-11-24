@@ -237,7 +237,7 @@ public class FocusTrackerService extends Service {
         if (prior != null && getBlock(prior.id) != null) return;
         TrackedApp app = db.trackedAppDao().getByPackageName(foregroundApp);
         if (app == null || !app.isMonitored) return;
-        int hour = Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).getHour();
+        int hour = Instant.ofEpochMilli(sessionStart).atZone(ZoneId.systemDefault()).getHour();
         float risk = MLPredictor.getInstance(this).predictRisk(app.mlAppId, seconds, hour);
         int strictness = TrackingState.preferences(this).getInt("strictness_level", 1);
         if (!TrackingPolicy.shouldBlock(seconds, risk, strictness)) return;
