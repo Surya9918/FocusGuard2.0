@@ -1,159 +1,155 @@
 package com.focusguard.app.ui;
 
+import android.Manifest;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.app.AppOpsManager;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Process;
 import android.provider.Settings;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
-
-import io.flutter.embedding.android.FlutterActivity;
 
 import com.focusguard.app.R;
 import com.focusguard.app.data.AppDatabase;
+import com.focusguard.app.data.AppUsageSummary;
+import com.focusguard.app.data.DailyStats;
 import com.focusguard.app.databinding.ActivityMainBinding;
 import com.focusguard.app.service.FocusTrackerService;
+import com.focusguard.app.service.TrackingPolicy;
+import com.focusguard.app.service.TrackingState;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDate;
 
 public class MainActivity extends AppCompatActivity {
-
     private ActivityMainBinding binding;
+    private LiveData<DailyStats> stats;
+    private LiveData<AppUsageSummary> topApp;
+    private String observedDate;
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferencesListener =
+            (preferences, key) -> renderStatus();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (!hasUsageStatsPermission() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this))) {
+        if (!TrackingState.preferences(this).getBoolean("onboarding_complete", false)) {
             startActivity(new Intent(this, OnboardingActivity.class));
             finish();
             return;
         }
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        checkPermissions();
-        startTrackingService();
-
-        setupUI();
-        observeData();
-    }
-
-    private void setupUI() {
-        setSupportActionBar(binding.toolbar);
-
-        binding.bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_focus_breakers) {
-                startActivity(new Intent(this, AppSelectorActivity.class));
-                return true;
-            } else if (id == R.id.nav_ai_settings) {
-                // Launch the custom Flutter Activity that handles MethodChannels
-                startActivity(
-                    FlutterActivity.withNewEngine()
-                        .initialRoute("/")
-                        .activityClass(AiInsightsActivity.class)
-                        .build(this)
-                );
-                return true;
-            }
+        WindowPadding.apply(binding.getRoot());
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() != R.id.action_settings) return false;
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         });
-
-        binding.toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_settings) {
-                startActivity(new Intent(this, SettingsActivity.class));
+        binding.bottomNav.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_focus_breakers) {
+                startActivity(new Intent(this, AppSelectorActivity.class));
+            } else if (item.getItemId() == R.id.nav_ai_settings) {
+                startActivity(new Intent(this, AiInsightsActivity.class));
+            } else {
                 return true;
             }
             return false;
         });
+        binding.chipServiceStatus.setOnClickListener(view -> toggleTracking());
+        TrackingState.preferences(this).registerOnSharedPreferenceChangeListener(preferencesListener);
     }
 
-    private void observeData() {
-        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (binding == null) return;
+        observeToday();
+        renderStats(stats.getValue());
+        renderStatus();
+    }
+
+    private void toggleTracking() {
+        if (TrackingState.enabled(this)) {
+            TrackingState.setEnabled(this, false);
+            stopService(new Intent(this, FocusTrackerService.class));
+            return;
+        }
+        if (!TrackingState.hasUsageAccess(this)) {
+            Toast.makeText(this, R.string.tracking_permissions, Toast.LENGTH_LONG).show();
+            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.tracking_start)
+                .setMessage(R.string.tracking_explanation)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.tracking_start, (dialog, which) -> startTracking())
+                .show();
+    }
+
+    private void startTracking() {
+        TrackingState.setEnabled(this, true);
+        try {
+            ContextCompat.startForegroundService(this, new Intent(this, FocusTrackerService.class));
+        } catch (IllegalStateException | SecurityException error) {
+            TrackingState.setEnabled(this, false);
+            Toast.makeText(this, R.string.tracking_save_error, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+        }
+    }
+
+    private void observeToday() {
+        String today = LocalDate.now().toString();
+        if (today.equals(observedDate)) return;
+        observedDate = today;
+        if (stats != null) stats.removeObservers(this);
+        if (topApp != null) topApp.removeObservers(this);
         AppDatabase db = AppDatabase.getInstance(this);
-
-        // Observe Screen Time and Blocks from DailyStats
-        db.dailyStatsDao().getStatsLiveDataForDate(today).observe(this, stats -> {
-            if (stats != null) {
-                // Update Screen Time
-                long totalSeconds = stats.totalScreenSeconds;
-                long minutes = totalSeconds / 60;
-                long hours = minutes / 60;
-                minutes = minutes % 60;
-                binding.tvScreenTime.setText(String.format(Locale.getDefault(), "%dh %dm", hours, minutes));
-
-                // Update progress ring (assuming 8 hours limit for 100%)
-                int progress = (int) ((totalSeconds * 100) / (8 * 3600));
-                binding.progressScreenTime.setProgress(Math.min(progress, 100));
-
-                // Update Blocks Today
-                binding.tvBlocksToday.setText(String.valueOf(stats.blocksTriggered));
-
-                // Update Distraction Time
-                long distMinutes = stats.distractionSeconds / 60;
-                binding.tvDistractionTime.setText(String.format(Locale.getDefault(), "%dm", distMinutes));
-                
-                // Update Focus Score (simplified calculation)
-                int focusScore = 100 - (int)(stats.distractionSeconds * 100 / Math.max(stats.totalScreenSeconds, 1));
-                binding.tvFocusScore.setText(String.valueOf(Math.max(0, focusScore)));
-            } else {
-                binding.tvScreenTime.setText("0h 0m");
-                binding.progressScreenTime.setProgress(0);
-                binding.tvBlocksToday.setText("0");
-                binding.tvDistractionTime.setText("0m");
-                binding.tvFocusScore.setText("100");
-            }
+        stats = db.dailyStatsDao().getStatsLiveDataForDate(today);
+        stats.observe(this, this::renderStats);
+        topApp = db.appUsageDao().getTopFocusBreaker(today);
+        topApp.observe(this, app -> {
+            binding.tvMostUsedApp.setText(app == null ? getString(R.string.tracking_no_usage) : app.appName);
+            binding.tvMostUsedTime.setText(app == null ? "" : formatDuration(app.totalSeconds));
         });
     }
 
-    private void checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
-            }
-        }
-
-        if (!hasUsageStatsPermission()) {
-            Toast.makeText(this, "Please grant Usage Stats permission", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "Please grant Overlay permission", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
-        }
+    private void renderStats(DailyStats day) {
+        long total = day == null ? 0 : day.totalScreenSeconds;
+        long distractions = day == null ? 0 : day.distractionSeconds;
+        int blocks = day == null ? 0 : day.blocksTriggered;
+        long goalSeconds = TrackingState.preferences(this).getInt(SettingsActivity.PREF_DAILY_GOAL, 4) * 3600L;
+        binding.tvScreenTime.setText(formatDuration(total));
+        binding.progressScreenTime.setProgress((int) Math.min(100, total * 100 / Math.max(3600, goalSeconds)));
+        binding.tvDistractionTime.setText(formatDuration(distractions));
+        binding.tvBlocksToday.setText(String.valueOf(blocks));
+        binding.tvFocusScore.setText(total == 0 ? getString(R.string.tracking_no_score)
+                : String.valueOf(TrackingPolicy.focusScore(total, distractions)));
     }
 
-    private boolean hasUsageStatsPermission() {
-        AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                Process.myUid(), getPackageName());
-        return mode == AppOpsManager.MODE_ALLOWED;
+    private void renderStatus() {
+        if (binding == null) return;
+        boolean active = TrackingState.enabled(this);
+        binding.chipServiceStatus.setText(active ? R.string.tracking_stop : R.string.tracking_start);
+        binding.tvFocusStatus.setText(active ? R.string.service_active : R.string.status_tracking_off);
+        binding.tvFocusStatusSub.setText(active ? R.string.tracking_active_body
+                : R.string.tracking_paused_body);
     }
 
-    private void startTrackingService() {
-        Intent serviceIntent = new Intent(this, FocusTrackerService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
-        }
+    private String formatDuration(long seconds) {
+        return getString(R.string.tracking_duration, seconds / 3600, seconds / 60 % 60);
+    }
+
+    @Override
+    protected void onDestroy() {
+        TrackingState.preferences(this).unregisterOnSharedPreferenceChangeListener(preferencesListener);
+        super.onDestroy();
     }
 }

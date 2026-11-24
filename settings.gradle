@@ -1,13 +1,16 @@
-plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
-include ':app'
-rootProject.name = "FocusGuard"
 
-setBinding(new Binding([gradle: this]))
-evaluate(new File(
-  settingsDir,
-  'flutter_nudge/.android/include_flutter.groovy'
-))
-include ':flutter_nudge'
-project(':flutter_nudge').projectDir = new File('flutter_nudge')
+rootProject.name = 'FocusGuard'
+include ':app'
+
+def flutterModule = file('flutter_nudge/.android/include_flutter.groovy')
+if (!flutterModule.isFile()) {
+    throw new GradleException('Run flutter pub get in flutter_nudge before building FocusGuard.')
+}
+apply from: flutterModule

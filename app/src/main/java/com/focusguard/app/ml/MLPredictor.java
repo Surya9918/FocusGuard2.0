@@ -1,69 +1,94 @@
 package com.focusguard.app.ml;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.util.Log;
 
+import org.json.JSONObject;
 import org.tensorflow.lite.Interpreter;
 
-import java.io.FileInputStream;
+import com.focusguard.app.service.TrackingPolicy;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 
-/**
- * MLPredictor — TFLite Inference Engine
- * ════════════════════════════════════════
- * Handles loading the TFLite model and performing real-time risk predictions.
- */
-public class MLPredictor {
-    private static final String TAG = "MLPredictor";
-    private static final String MODEL_FILE = "distraction_model.tflite";
-    private static MLPredictor sInstance;
-
-    private Interpreter mInterpreter;
+public final class MLPredictor {
+    private static final String[] FEATURES = {"app_id", "hour_of_day", "time_spent_mins"};
+    private static MLPredictor instance;
+    private final float[] scale = new float[3];
+    private final float[] offset = new float[3];
+    private Interpreter interpreter;
 
     private MLPredictor(Context context) {
         try {
-            mInterpreter = new Interpreter(loadModelFile(context));
-            Log.d(TAG, "TFLite Model loaded successfully.");
-        } catch (IOException e) {
-            Log.e(TAG, "Error loading TFLite model.", e);
+            JSONObject metadata = new JSONObject(new String(read(context, "scaler_params.json"),
+                    StandardCharsets.UTF_8));
+            byte[] model = read(context, "distraction_model.tflite");
+            String digest = Base64.getEncoder().encodeToString(
+                    MessageDigest.getInstance("SHA-256").digest(model));
+            if (!digest.equals(metadata.getString("model_sha256_base64"))) {
+                throw new IOException("Model metadata checksum mismatch");
+            }
+            for (int i = 0; i < FEATURES.length; i++) {
+                if (!FEATURES[i].equals(metadata.getJSONArray("feature_names").getString(i))) {
+                    throw new IOException("Unexpected model input order");
+                }
+                scale[i] = (float) metadata.getJSONArray("scale").getDouble(i);
+                offset[i] = (float) metadata.getJSONArray("min").getDouble(i);
+                if (!Float.isFinite(scale[i]) || !Float.isFinite(offset[i])) {
+                    throw new IOException("Invalid preprocessing values");
+                }
+            }
+            ByteBuffer buffer = ByteBuffer.allocateDirect(model.length).order(ByteOrder.nativeOrder());
+            buffer.put(model);
+            ((java.nio.Buffer) buffer).rewind();
+            interpreter = new Interpreter(buffer);
+        } catch (Exception | LinkageError error) {
+            Log.i("FocusGuardML", "Using duration-based nudges: " + error.getMessage());
         }
     }
 
     public static synchronized MLPredictor getInstance(Context context) {
-        if (sInstance == null) {
-            sInstance = new MLPredictor(context);
+        if (instance == null) instance = new MLPredictor(context.getApplicationContext());
+        return instance;
+    }
+
+    public synchronized float predictRisk(int appId, long seconds, int hour) {
+        if (interpreter == null) return TrackingPolicy.durationRisk(seconds);
+        float[] input = {appId, hour, seconds / 60f};
+        for (int i = 0; i < input.length; i++) {
+            input[i] = Math.max(0f, Math.min(1f, input[i] * scale[i] + offset[i]));
         }
-        return sInstance;
-    }
-
-    private MappedByteBuffer loadModelFile(Context context) throws IOException {
-        AssetFileDescriptor fileDescriptor = context.getAssets().openFd(MODEL_FILE);
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredLength = fileDescriptor.getDeclaredLength();
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
-    }
-
-    /**
-     * Predicts the distraction risk score (0.0 to 1.0).
-     * 
-     * @param appId The mapped category ID of the app.
-     * @param durationSeconds Time spent in the current session.
-     * @param hourOfDay Current hour (0-23).
-     * @return Risk score.
-     */
-    public float predictRisk(int appId, long durationSeconds, int hourOfDay) {
-        if (mInterpreter == null) return 0.0f;
-
-        // Model expects input: [app_id, duration, hour]
-        float[][] input = {{ (float)appId, (float)durationSeconds, (float)hourOfDay }};
         float[][] output = new float[1][1];
+        try {
+            interpreter.run(new float[][]{input}, output);
+            if (Float.isFinite(output[0][0]) && output[0][0] >= 0f && output[0][0] <= 1f) {
+                return output[0][0];
+            }
+        } catch (RuntimeException | LinkageError error) {
+            Log.w("FocusGuardML", "Model inference failed", error);
+        }
+        try {
+            interpreter.close();
+        } catch (RuntimeException | LinkageError error) {
+            Log.w("FocusGuardML", "Model cleanup failed", error);
+        }
+        interpreter = null;
+        return TrackingPolicy.durationRisk(seconds);
+    }
 
-        mInterpreter.run(input, output);
-        return output[0][0];
+    private static byte[] read(Context context, String asset) throws IOException {
+        try (InputStream source = context.getAssets().open(asset);
+                ByteArrayOutputStream result = new ByteArrayOutputStream()) {
+            byte[] bytes = new byte[4096];
+            int length;
+            while ((length = source.read(bytes)) != -1) result.write(bytes, 0, length);
+            return result.toByteArray();
+        }
     }
 }

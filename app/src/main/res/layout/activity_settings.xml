@@ -500,6 +500,13 @@
 
                     <!-- Clear data button -->
                     <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_privacy_policy"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tracking_privacy" />
+
+                        <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_clear_data"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

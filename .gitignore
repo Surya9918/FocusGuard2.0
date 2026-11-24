@@ -22,3 +22,10 @@ local.properties
 /flutter_nudge/.pub-cache/
 /flutter_nudge/.pub/
 /flutter_nudge/build/
+
+/app/build/
+/app/debug/
+*.apk
+*.aab
+*.jks
+*.keystore

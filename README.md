@@ -1,34 +1,23 @@
 # FocusGuard 2.0
 
-A native Android digital-wellbeing application for monitoring app usage and delivering focus nudges.
+FocusGuard is an Android screen-time tracker with user-selected Focus Breakers, five-minute snooze, daily summaries and reminders, and a Flutter Insights screen. Tracking starts with explicit consent and can be stopped from the dashboard or persistent notification. Usage data stays on the device. See the [privacy policy](PRIVACY_POLICY.md).
 
-## Implemented components
+## Build and verify
 
-- Java Android application in `app/`, targeting Android API 34 with minimum API 26.
-- Room persistence for tracked apps, usage and daily statistics.
-- App selection, onboarding, settings and usage-oriented screens.
-- Bundled TensorFlow Lite asset and a separate model-generation script.
-- Experimental Flutter nudge module in `flutter_nudge/`.
-
-## Build from source
-
-Open the repository in Android Studio, install Android SDK 34 and use the JDK required by the checked-in Gradle/Android plugin versions. Let Gradle sync before building. From a configured terminal:
+Use JDK 21, Android SDK 36, and Flutter 3.41.7.
 
 ```sh
-cd flutter_nudge
-flutter pub get
-cd ..
-./gradlew :app:assembleDebug :app:testDebugUnitTest
+(cd flutter_nudge && flutter pub get --enforce-lockfile && flutter analyze && flutter test)
+bash gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:bundleRelease
 ```
 
-On Windows use `gradlew.bat` instead. Debug artifacts appear under `app/build/outputs/apk/`; committed historical build artifacts are not a substitute for a fresh build.
+Use `gradlew.bat` on Windows. To sign a release, supply the existing release keystore through `FG_KEYSTORE`, `FG_STORE_PASSWORD`, `FG_KEY_ALIAS`, and `FG_KEY_PASSWORD`. Without these variables, the release package is for verification only. Keep signing material outside the repository.
 
-## Verification and limits
+## Release verification
 
-Test permission denial, usage access, background execution, notification behavior and battery restrictions on an Android 8+ device. The TFLite asset needs a documented dataset, held-out evaluation and model-version tracking before making predictive-accuracy claims. The Flutter module is a separate prototype, not proof of full platform integration.
+- Run the Android release workflow and install the minified signed candidate.
+- Verify usage-access denial and revocation, overlay refusal, notification refusal, reboot, manual stop, and battery-restricted operation on Android 8 and Android 15/16, including a Samsung device.
+- Check app selection, real usage totals, block counts, five-minute Snooze, strictness, daily goal, reminders, summary, Insights, and data clearing.
+- Confirm the package ID, version code, signing identity, and 16 KB alignment. Complete Play Console Data safety and declare the user-visible `specialUse` foreground service for review.
 
-## Project hygiene
-
-Keep `local.properties`, signing keys, personal usage logs and new build outputs untracked. Existing generated files in Git history are retained; `.gitignore` alone cannot remove already tracked files. Configure a release application ID and signing process before distribution.
-
-The settings file includes the generated Flutter Android module; install Flutter and run `flutter pub get` in `flutter_nudge` before Gradle sync. The daemon configuration requests JetBrains JDK 21.
+The historical TFLite asset lacks matching preprocessing metadata. The app uses duration-based nudges until the model asset has matching, checksum-bound metadata. The generator exports matching model and preprocessing files. Its data is synthetic. Evaluate predictive accuracy on held-out real-world data before deploying a learned model.

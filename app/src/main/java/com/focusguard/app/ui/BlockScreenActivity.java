@@ -1,70 +1,86 @@
 package com.focusguard.app.ui;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.focusguard.app.R;
+import com.focusguard.app.data.AppDatabase;
+import com.focusguard.app.data.DailyStats;
+import com.focusguard.app.databinding.LayoutBlockScreenBinding;
+import com.focusguard.app.service.FocusTrackerService;
+import com.focusguard.app.service.TrackingState;
 
-/**
- * BlockScreenActivity — THE MOST CRITICAL ACTIVITY.
- * ══════════════════════════════════════════════════════════════════
- * This is the full-screen overlay that covers distraction apps.
- */
+import java.time.LocalDate;
+
 public class BlockScreenActivity extends AppCompatActivity {
-
-    private String mBlockedPackage;
+    private FocusTrackerService.Block block;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Make it appear over the lock screen and turn the screen on
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-
-        setContentView(R.layout.layout_block_screen);
-
-        mBlockedPackage = getIntent().getStringExtra("package_name");
-
-        TextView titleText = findViewById(R.id.tv_block_title);
-        TextView subtitleText = findViewById(R.id.tv_block_subtitle);
-        TextView appNameText = findViewById(R.id.tv_blocked_app_name);
-        android.widget.ImageView appIcon = findViewById(R.id.img_blocked_app_icon);
-        Button closeButton = findViewById(R.id.btn_close_app);
-        Button snoozeButton = findViewById(R.id.btn_snooze);
-
-        if (mBlockedPackage != null) {
-            appNameText.setText(mBlockedPackage);
-            // In a real app, we would load the app icon here
+        block = FocusTrackerService.getBlock(getIntent().getLongExtra(FocusTrackerService.BLOCK_ID, 0));
+        if (block == null || !TrackingState.enabled(this)) {
+            finish();
+            return;
         }
-
-        closeButton.setOnClickListener(v -> {
-            // Navigate to home screen
-            Intent startMain = new Intent(Intent.ACTION_MAIN);
-            startMain.addCategory(Intent.CATEGORY_HOME);
-            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(startMain);
+        LayoutBlockScreenBinding binding = LayoutBlockScreenBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        WindowPadding.apply(binding.getRoot());
+        binding.tvBlockedAppName.setText(block.label);
+        binding.tvBlockedDuration.setText(getString(R.string.tracking_duration,
+                block.seconds / 3600, block.seconds / 60 % 60));
+        try {
+            binding.imgBlockedAppIcon.setImageDrawable(
+                    getPackageManager().getApplicationIcon(block.packageName));
+        } catch (PackageManager.NameNotFoundException ignored) {
+            binding.imgBlockedAppIcon.setImageResource(R.drawable.ic_app_placeholder);
+        }
+        binding.btnCloseApp.setOnClickListener(view -> goHome());
+        binding.btnSnooze.setOnClickListener(view -> {
+            TrackingState.snooze(this, block.packageName);
             finish();
         });
-
-        snoozeButton.setOnClickListener(v -> {
-            // Close the block screen
-            finish();
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goHome();
+            }
         });
     }
 
     @Override
-    public void onBackPressed() {
-        // Disable back button to prevent easy bypass
-        // User must click one of the buttons
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (!hasFocus || block == null) return;
+        if (FocusTrackerService.getBlock(block.id) == null || !TrackingState.enabled(this)) {
+            finish();
+            return;
+        }
+        if (!FocusTrackerService.markShown(block)) return;
+        String date = LocalDate.now().toString();
+        AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+        db.getTransactionExecutor().execute(() -> db.runInTransaction(() -> {
+            if (!TrackingState.enabled(getApplicationContext())) return;
+            DailyStats stats = db.dailyStatsDao().getStatsForDate(date);
+            if (stats == null) stats = new DailyStats(date);
+            stats.blocksTriggered++;
+            db.dailyStatsDao().insertOrReplace(stats);
+        }));
+    }
+
+    private void goHome() {
+        startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (block != null && !isChangingConfigurations()) FocusTrackerService.dismiss(block);
+        super.onDestroy();
     }
 }

@@ -10,12 +10,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'FocusGuard AI Insights',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF6750A4), // M3 Purple
-        brightness: Brightness.light,
-      ),
+      title: 'FocusGuard',
+      theme: ThemeData(colorSchemeSeed: const Color(0xFF6750A4)),
       home: const AiInsightsScreen(),
     );
   }
@@ -29,168 +25,99 @@ class AiInsightsScreen extends StatefulWidget {
 }
 
 class _AiInsightsScreenState extends State<AiInsightsScreen> {
-  static const platform = MethodChannel('com.focusguard.app/stats');
-  
-  Map<String, dynamic>? _stats;
-  bool _isLoading = true;
+  static const _platform = MethodChannel('com.focusguard.app/stats');
+  late Future<Map<String, Object?>> _stats = _readStats();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadDailyStats();
+  Future<Map<String, Object?>> _readStats() async {
+    final stats = await _platform.invokeMapMethod<String, Object?>(
+      'getDailyStats',
+    );
+    if (stats == null) throw StateError('Empty response');
+    return stats;
   }
 
-  Future<void> _loadDailyStats() async {
-    try {
-      final Map<dynamic, dynamic> result = await platform.invokeMethod('getDailyStats');
-      setState(() {
-        _stats = Map<String, dynamic>.from(result);
-        _isLoading = false;
-      });
-    } on PlatformException catch (e) {
-      debugPrint("Failed to get stats: '${e.message}'.");
-      setState(() => _isLoading = false);
-    }
-  }
+  String _duration(int seconds) => '${seconds ~/ 3600}h ${seconds ~/ 60 % 60}m';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Focus Insights'),
+        title: const Text('Focus Insights'),
         leading: IconButton(
+          tooltip: 'Back',
           icon: const Icon(Icons.arrow_back),
           onPressed: () => SystemNavigator.pop(),
         ),
       ),
-      body: _isLoading 
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeaderCard(),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Deep Analysis',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInsightItem(
-                    icon: Icons.trending_up,
-                    color: Colors.green,
-                    title: 'Focus Score: ${_stats?['focusScore'] ?? '--'}/100',
-                    description: _getFocusDescription(_stats?['focusScore'] ?? 0),
-                  ),
-                  _buildInsightItem(
-                    icon: Icons.timer,
-                    color: Colors.blue,
-                    title: 'Usage Summary',
-                    description: 'You have been on screen for ${_formatDuration(_stats?['totalScreenSeconds'] ?? 0)} with ${_stats?['blocksTriggered'] ?? 0} blocks.',
-                  ),
-                  _buildInsightItem(
-                    icon: Icons.warning_amber_rounded,
-                    color: Colors.orange,
-                    title: 'Distraction Time',
-                    description: 'Spent ${_formatDuration(_stats?['distractionSeconds'] ?? 0)} on focus breakers today.',
-                  ),
-                  const SizedBox(height: 32),
-                  Center(
-                    child: OutlinedButton.icon(
-                      onPressed: () => SystemNavigator.pop(),
-                      icon: const Icon(Icons.exit_to_app),
-                      label: const Text('Return to Native App'),
+      body: SafeArea(
+        child: FutureBuilder<Map<String, Object?>>(
+          future: _stats,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Could not load usage statistics.'),
+                    TextButton(
+                      onPressed: () {
+                        final retry = _readStats();
+                        setState(() {
+                          _stats = retry;
+                        });
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            final stats = snapshot.requireData;
+            final total = stats['totalScreenSeconds'] as int? ?? 0;
+            if (total == 0) {
+              return const Center(child: Text('No screen time recorded today.'));
+            }
+            final distractions = stats['distractionSeconds'] as int? ?? 0;
+            final blocks = stats['blocksTriggered'] as int? ?? 0;
+            final score = stats['focusScore'] as int?;
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        const Text('Focus score'),
+                        Text(
+                          score == null ? '—' : '$score/100',
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-    );
-  }
-
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final hours = minutes ~/ 60;
-    if (hours > 0) {
-      return '${hours}h ${minutes % 60}m';
-    }
-    return '${minutes}m';
-  }
-
-  String _getFocusDescription(int score) {
-    if (score >= 80) return 'Excellent focus! You are managing your time very well today.';
-    if (score >= 50) return 'Good progress, but try to reduce time on distraction apps.';
-    return 'High distraction levels detected. Consider using a Focus Mode.';
-  }
-
-  Widget _buildHeaderCard() {
-    final score = _stats?['focusScore'] ?? 0;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF6750A4).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF6750A4).withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.psychology, size: 64, color: Color(0xFF6750A4)),
-          const SizedBox(height: 16),
-          const Text(
-            'AI Focus Score',
-            style: TextStyle(fontSize: 18, color: Colors.black54),
-          ),
-          Text(
-            '$score/100',
-            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF6750A4)),
-          ),
-          Text(
-            score >= 80 ? 'Excellent Resilience' : (score >= 50 ? 'Steady Progress' : 'Needs Attention'),
-            style: TextStyle(
-              fontSize: 16, 
-              fontWeight: FontWeight.w500, 
-              color: score >= 80 ? Colors.green : (score >= 50 ? Colors.blue : Colors.orange)
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInsightItem({required IconData icon, required Color color, required String title, required String description}) {
-    return Card(
-      elevation: 0,
-      color: Colors.grey[50],
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundColor: color.withOpacity(0.1),
-              child: Icon(icon, color: color),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 4),
-                  Text(description, style: const TextStyle(color: Colors.black54)),
-                ],
-              ),
-            ),
-          ],
+                ),
+                ListTile(
+                  leading: const Icon(Icons.timer_outlined),
+                  title: const Text('Screen time'),
+                  trailing: Text(_duration(total)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.phone_android),
+                  title: const Text('Time on Focus Breakers'),
+                  trailing: Text(_duration(distractions)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.shield_outlined),
+                  title: const Text('Blocks shown'),
+                  trailing: Text('$blocks'),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

@@ -49,4 +49,11 @@ public interface AppUsageDao {
 
     @Query("SELECT COUNT(*) FROM app_usage_records WHERE session_date = :date AND was_blocked = 1")
     int getBlockCountForDate(String date);
+    @Query("SELECT usage.package_name AS packageName, tracked.app_name AS appName, "
+            + "SUM(usage.duration_seconds) AS totalSeconds FROM app_usage_records AS usage "
+            + "JOIN tracked_apps AS tracked ON tracked.package_name = usage.package_name "
+            + "WHERE usage.session_date = :date AND tracked.is_monitored = 1 "
+            + "GROUP BY usage.package_name, tracked.app_name "
+            + "ORDER BY totalSeconds DESC, usage.package_name LIMIT 1")
+    LiveData<AppUsageSummary> getTopFocusBreaker(String date);
 }
