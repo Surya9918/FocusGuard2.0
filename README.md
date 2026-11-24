@@ -8,7 +8,7 @@ Use JDK 21, Android SDK 36, and Flutter 3.41.7.
 
 ```sh
 (cd flutter_nudge && flutter pub get --enforce-lockfile && flutter analyze && flutter test)
-./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:bundleRelease
+bash gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:bundleRelease
 ```
 
 Use `gradlew.bat` on Windows. To sign a release, supply the existing release keystore through `FG_KEYSTORE`, `FG_STORE_PASSWORD`, `FG_KEY_ALIAS`, and `FG_KEY_PASSWORD`. Without these variables, the release package is for verification only. Keep signing material outside the repository.
