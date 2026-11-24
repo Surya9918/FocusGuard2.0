@@ -1,11 +1,15 @@
 package com.focusguard.app.service;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -73,6 +77,8 @@ public final class FocusNotifications {
 
     private static boolean post(Context context, int id, String channel, int title, String text) {
         NotificationManagerCompat notifications = NotificationManagerCompat.from(context);
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context,
+                Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return false;
         if (!notifications.areNotificationsEnabled()) return false;
         PendingIntent open = PendingIntent.getActivity(context, 0,
                 new Intent(context, MainActivity.class), PendingIntent.FLAG_IMMUTABLE);
