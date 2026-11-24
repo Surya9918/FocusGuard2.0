@@ -20,6 +20,8 @@ Prerequisites (install once):
   pip install tensorflow numpy scikit-learn pandas matplotlib
 """
 
+import base64
+import hashlib
 import os
 import numpy as np
 import pandas as pd
@@ -300,15 +302,18 @@ def export_tflite(model: tf.keras.Model, output_path: str = "distraction_model.t
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 7: NORMALIZATION PARAMS EXPORT
 # ─────────────────────────────────────────────────────────────────────────────
-def export_scaler_params(scaler: MinMaxScaler, output_path: str = "scaler_params.json"):
+def export_scaler_params(
+    scaler: MinMaxScaler, model_bytes: bytes, output_path: str = "scaler_params.json"
+):
     """
     Exports scaler min/max parameters to JSON so the Android app can
     normalize inputs identically to how training data was normalized.
 
-    These values are hardcoded into MLPredictor.java for zero-overhead inference.
+    The Android app pairs this metadata with the exact model bytes.
     """
     params = {
         "feature_names": ["app_id", "hour_of_day", "time_spent_mins"],
+        "model_sha256_base64": base64.b64encode(hashlib.sha256(model_bytes).digest()).decode("ascii"),
         "data_min":  scaler.data_min_.tolist(),
         "data_max":  scaler.data_max_.tolist(),
         "scale":     scaler.scale_.tolist(),
@@ -456,8 +461,8 @@ def main():
 
     # Step 5: Export
     print("\n[5/5] Exporting artifacts...")
-    export_tflite(model, "distraction_model.tflite")
-    export_scaler_params(scaler, "scaler_params.json")
+    model_bytes = export_tflite(model, "distraction_model.tflite")
+    export_scaler_params(scaler, model_bytes, "scaler_params.json")
 
     # Evaluation
     evaluate_and_plot(model, history, X_test, y_test, scaler)
@@ -467,7 +472,7 @@ def main():
     print("="*60)
     print("\nFiles generated:")
     print("  1. distraction_model.tflite  → Copy to app/src/main/assets/")
-    print("  2. scaler_params.json        → Reference for MLPredictor.java")
+    print("  2. scaler_params.json        → Copy alongside the model to app/src/main/assets/")
     print("  3. training_curves.png       → Training visualization")
     print("  4. distraction_heatmap.png   → Risk prediction heatmap")
 

@@ -63,7 +63,12 @@ class _AiInsightsScreenState extends State<AiInsightsScreen> {
                   children: [
                     const Text('Could not load usage statistics.'),
                     TextButton(
-                      onPressed: () => setState(() => _stats = _readStats()),
+                      onPressed: () {
+                        final retry = _readStats();
+                        setState(() {
+                          _stats = retry;
+                        });
+                      },
                       child: const Text('Retry'),
                     ),
                   ],

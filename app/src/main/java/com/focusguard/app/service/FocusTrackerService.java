@@ -99,7 +99,7 @@ public class FocusTrackerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && ACTION_STOP.equals(intent.getAction())
+        if ((intent != null && ACTION_STOP.equals(intent.getAction()))
                 || !TrackingState.enabled(this) || !TrackingState.hasUsageAccess(this)) {
             stopTracking();
             return START_NOT_STICKY;

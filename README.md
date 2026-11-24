@@ -20,4 +20,4 @@ Use `gradlew.bat` on Windows. To sign a release, supply the existing release key
 - Check app selection, real usage totals, block counts, five-minute Snooze, strictness, daily goal, reminders, summary, Insights, and data clearing.
 - Confirm the package ID, version code, signing identity, and 16 KB alignment. Complete Play Console Data safety and declare the user-visible `specialUse` foreground service for review.
 
-The historical TFLite asset lacks matching preprocessing metadata. The app uses duration-based nudges until the model asset has matching, checksum-bound metadata. Evaluate predictive accuracy on held-out data before using or advertising learned predictions.
+The historical TFLite asset lacks matching preprocessing metadata. The app uses duration-based nudges until the model asset has matching, checksum-bound metadata. The generator exports matching model and preprocessing files. Its data is synthetic. Evaluate predictive accuracy on held-out real-world data before deploying a learned model.

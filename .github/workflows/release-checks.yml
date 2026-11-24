@@ -33,6 +33,7 @@ jobs:
           flutter test
       - name: Build debug and minified release
         run: |
+          bash gradlew :app:clean
           bash gradlew :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest :app:lintDebug :app:bundleRelease :app:assembleRelease
       - name: Verify release APK and bundle native alignment
         run: |
