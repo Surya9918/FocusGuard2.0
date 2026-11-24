@@ -20,8 +20,10 @@ import com.focusguard.app.R;
 import com.focusguard.app.data.AppDatabase;
 import com.focusguard.app.databinding.ActivitySettingsBinding;
 import com.focusguard.app.databinding.ItemPermissionRowBinding;
+import com.focusguard.app.service.FocusNotifications;
+import com.focusguard.app.service.FocusTrackerService;
+import com.focusguard.app.service.TrackingState;
 
-import java.util.concurrent.Executors;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -39,6 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        WindowPadding.apply(binding.getRoot());
 
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
@@ -117,29 +120,69 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setupNotificationSwitches() {
-        binding.switchDailySummary.setChecked(prefs.getBoolean(PREF_SUMMARY, true));
+        binding.switchDailySummary.setChecked(prefs.getBoolean(PREF_SUMMARY, false));
         binding.switchReminders.setChecked(prefs.getBoolean(PREF_REMINDERS, false));
+        FocusNotifications.scheduleSummary(this, binding.switchDailySummary.isChecked());
+        binding.switchDailySummary.setOnCheckedChangeListener((button, on) -> {
+            prefs.edit().putBoolean(PREF_SUMMARY, on).apply();
+            FocusNotifications.scheduleSummary(this, on);
+            if (on) requestNotificationAccess();
+        });
+        binding.switchReminders.setOnCheckedChangeListener((button, on) -> {
+            prefs.edit().putBoolean(PREF_REMINDERS, on).apply();
+            if (on) requestNotificationAccess();
+            else FocusNotifications.cancelReminder(this);
+        });
+    }
 
-        binding.switchDailySummary.setOnCheckedChangeListener((buttonView, isChecked) -> 
-                prefs.edit().putBoolean(PREF_SUMMARY, isChecked).apply());
-        
-        binding.switchReminders.setOnCheckedChangeListener((buttonView, isChecked) -> 
-                prefs.edit().putBoolean(PREF_REMINDERS, isChecked).apply());
+    private void requestNotificationAccess() {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.POST_NOTIFICATIONS)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+        }
     }
 
     private void setupPrivacyActions() {
-        binding.btnClearData.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.settings_clear_data_confirm_title)
-                    .setMessage(R.string.settings_clear_data_confirm_body)
-                    .setPositiveButton(R.string.settings_clear_data_confirm_yes, (dialog, which) -> {
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            AppDatabase.getInstance(getApplicationContext()).clearAllTables();
-                            runOnUiThread(() -> Toast.makeText(this, "Data cleared", Toast.LENGTH_SHORT).show());
-                        });
-                    })
-                    .setNegativeButton(R.string.settings_clear_data_confirm_no, null)
-                    .show();
+        binding.btnPrivacyPolicy.setOnClickListener(view -> new AlertDialog.Builder(this)
+                .setTitle(R.string.tracking_privacy)
+                .setMessage(R.string.tracking_privacy_body)
+                .setPositiveButton(android.R.string.ok, null)
+                .show());
+        binding.btnClearData.setOnClickListener(view -> new AlertDialog.Builder(this)
+                .setTitle(R.string.settings_clear_data_confirm_title)
+                .setMessage(R.string.settings_clear_data_confirm_body)
+                .setPositiveButton(R.string.settings_clear_data_confirm_yes, (dialog, which) -> clearData())
+                .setNegativeButton(R.string.settings_clear_data_confirm_no, null)
+                .show());
+    }
+
+    private void clearData() {
+        TrackingState.setEnabled(this, false);
+        stopService(new Intent(this, FocusTrackerService.class));
+        TrackingState.clearSnoozes(this);
+        prefs.edit().putBoolean(PREF_SUMMARY, false).putBoolean(PREF_REMINDERS, false)
+                .remove("last_summary").remove("last_reminder").apply();
+        binding.switchDailySummary.setChecked(false);
+        binding.switchReminders.setChecked(false);
+        FocusNotifications.scheduleSummary(this, false);
+        FocusNotifications.cancelReminder(this);
+        binding.btnClearData.setEnabled(false);
+        AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+        db.getQueryExecutor().execute(() -> {
+            int message;
+            try {
+                db.clearAllTables();
+                message = R.string.tracking_clear_done;
+            } catch (RuntimeException error) {
+                message = R.string.tracking_clear_error;
+            }
+            int result = message;
+            runOnUiThread(() -> {
+                if (isDestroyed()) return;
+                binding.btnClearData.setEnabled(true);
+                Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            });
         });
     }
 

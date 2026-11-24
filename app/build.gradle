@@ -3,10 +3,10 @@
 // Module-level Gradle build configuration
 //
 // Architecture Notes:
-//   - compileSdk 34  → Android 14 support (required for full-screen intents)
+//   - compileSdk 36  → Android 14 support (required for full-screen intents)
 //   - minSdk 26      → Android 8.0+; required for UsageStatsManager.queryEvents()
 //                       with ACTIVITY_RESUMED / ACTIVITY_PAUSED constants
-//   - targetSdk 34   → Full behavioral compatibility with Android 14
+//   - targetSdk 36   → Full behavioral compatibility with Android 14
 // ─────────────────────────────────────────────────────────────────────────────
 
 plugins {
@@ -15,14 +15,14 @@ plugins {
 
 android {
     namespace 'com.focusguard.app'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.focusguard.app"
         minSdk 26              // Android 8.0 — minimum for precise event-based tracking
-        targetSdk 34
-        versionCode 1
-        versionName "1.0.0"
+        targetSdk 36
+        versionCode 2
+        versionName "2.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -38,8 +38,27 @@ android {
         }
     }
 
+    def signingVariables = ['FG_KEYSTORE', 'FG_STORE_PASSWORD', 'FG_KEY_ALIAS', 'FG_KEY_PASSWORD']
+    def signingValues = signingVariables.collectEntries { [(it): System.getenv(it)] }
+    if (signingValues.values().any { it } && !signingValues.values().every { it }) {
+        throw new GradleException('Set all four FG_* release signing variables together.')
+    }
+    signingConfigs {
+        if (signingValues.values().every { it }) {
+            release {
+                storeFile file(signingValues.FG_KEYSTORE)
+                storePassword signingValues.FG_STORE_PASSWORD
+                keyAlias signingValues.FG_KEY_ALIAS
+                keyPassword signingValues.FG_KEY_PASSWORD
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (signingConfigs.findByName('release') != null) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -55,13 +74,13 @@ android {
     // TFLite loads the model via memory-mapped file I/O for zero-copy efficiency.
     // If the .tflite file is compressed in the APK, mmap() will fail at runtime.
     // ─────────────────────────────────────────────────────────────────────────
-    aaptOptions {
-        noCompress "tflite"
+    androidResources {
+        noCompress += "tflite"
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -70,9 +89,6 @@ android {
 
     // Packaging options to avoid duplicate META-INF files from TFLite transitive deps
     packaging {
-        jniLibs {
-            useLegacyPackaging = true
-        }
         resources {
             excludes += [
                 '/META-INF/DEPENDENCIES',
@@ -125,9 +141,7 @@ dependencies {
     //
     // Keep versions in sync — mismatches cause cryptic JNI crashes.
     // ─────────────────────────────────────────────────────────────────────────
-    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.4.4'
-    implementation 'org.tensorflow:tensorflow-lite-gpu:2.14.0'
+    implementation 'com.google.ai.edge.litert:litert:1.4.0'
 
     // ─────────────────────────────────────────────────────────────────────────
     // ROOM DATABASE — Local SQLite ORM for screen time history

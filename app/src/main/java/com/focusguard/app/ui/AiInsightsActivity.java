@@ -4,14 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.focusguard.app.data.AppDatabase;
 import com.focusguard.app.data.DailyStats;
+import com.focusguard.app.service.TrackingPolicy;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -19,45 +16,48 @@ import io.flutter.plugin.common.MethodChannel;
 
 public class AiInsightsActivity extends FlutterActivity {
     private static final String CHANNEL = "com.focusguard.app/stats";
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private MethodChannel channel;
 
     @Override
-    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-        super.configureFlutterEngine(flutterEngine);
-
-        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
-                .setMethodCallHandler((call, result) -> {
-                    if (call.method.equals("getDailyStats")) {
-                        fetchDailyStats(result);
-                    } else {
-                        result.notImplemented();
-                    }
-                });
+    public void configureFlutterEngine(@NonNull FlutterEngine engine) {
+        super.configureFlutterEngine(engine);
+        channel = new MethodChannel(engine.getDartExecutor().getBinaryMessenger(), CHANNEL);
+        channel.setMethodCallHandler((call, result) -> {
+            if (call.method.equals("getDailyStats")) {
+                AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+                db.getQueryExecutor().execute(() -> fetchDailyStats(db, result));
+            } else {
+                result.notImplemented();
+            }
+        });
     }
 
-    private void fetchDailyStats(MethodChannel.Result result) {
-        executorService.execute(() -> {
-            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            AppDatabase db = AppDatabase.getInstance(this);
-            DailyStats stats = db.dailyStatsDao().getStatsForDate(today);
+    @Override
+    public void cleanUpFlutterEngine(@NonNull FlutterEngine engine) {
+        if (channel != null) {
+            channel.setMethodCallHandler(null);
+            channel = null;
+        }
+        super.cleanUpFlutterEngine(engine);
+    }
 
-            Map<String, Object> statsMap = new HashMap<>();
-            if (stats != null) {
-                statsMap.put("totalScreenSeconds", stats.totalScreenSeconds);
-                statsMap.put("distractionSeconds", stats.distractionSeconds);
-                statsMap.put("blocksTriggered", stats.blocksTriggered);
-                
-                // Calculate Focus Score
-                int focusScore = 100 - (int)(stats.distractionSeconds * 100 / Math.max(stats.totalScreenSeconds, 1));
-                statsMap.put("focusScore", Math.max(0, focusScore));
-            } else {
-                statsMap.put("totalScreenSeconds", 0L);
-                statsMap.put("distractionSeconds", 0L);
-                statsMap.put("blocksTriggered", 0);
-                statsMap.put("focusScore", 100);
-            }
-
-            runOnUiThread(() -> result.success(statsMap));
-        });
+    private void fetchDailyStats(AppDatabase db, MethodChannel.Result result) {
+        try {
+            DailyStats day = db.dailyStatsDao().getStatsForDate(LocalDate.now().toString());
+            long total = day == null ? 0 : day.totalScreenSeconds;
+            long distraction = day == null ? 0 : day.distractionSeconds;
+            Map<String, Object> values = new HashMap<>();
+            values.put("totalScreenSeconds", total);
+            values.put("distractionSeconds", distraction);
+            values.put("blocksTriggered", day == null ? 0 : day.blocksTriggered);
+            values.put("focusScore", total == 0 ? null : TrackingPolicy.focusScore(total, distraction));
+            runOnUiThread(() -> {
+                if (channel != null) result.success(values);
+            });
+        } catch (RuntimeException error) {
+            runOnUiThread(() -> {
+                if (channel != null) result.error("STATS_UNAVAILABLE", null, null);
+            });
+        }
     }
 }

@@ -48,7 +48,7 @@
 
     <!-- Today's Highlights section -->
     <string name="highlights_section_title">Today\'s Highlights</string>
-    <string name="highlight_most_used_app">Most used app</string>
+    <string name="highlight_most_used_app">Most used Focus Breaker</string>
     <string name="highlight_time_on_distractions">Time on distracting apps</string>
     <string name="highlight_blocks_today">Times FocusGuard helped</string>
     <string name="highlight_focus_score">Your focus score</string>
@@ -142,7 +142,7 @@
     <string name="settings_privacy_data_local_sub">FocusGuard never uploads your usage data anywhere.</string>
     <string name="settings_clear_data">Clear all my data</string>
     <string name="settings_clear_data_confirm_title">Clear all data?</string>
-    <string name="settings_clear_data_confirm_body">This will delete all your screen time history. This cannot be undone.</string>
+    <string name="settings_clear_data_confirm_body">This pauses tracking and deletes usage history and your Focus Breakers.</string>
     <string name="settings_clear_data_confirm_yes">Yes, clear everything</string>
     <string name="settings_clear_data_confirm_no">Never mind</string>
 
@@ -180,7 +180,7 @@
          ONBOARDING
          ═══════════════════════════════════════════════════════════════════ -->
     <string name="onboarding_welcome_title">Welcome to FocusGuard 🛡️</string>
-    <string name="onboarding_welcome_body">FocusGuard uses AI to help you notice when you\'re getting distracted — and gently steps in before it gets out of hand.</string>
+    <string name="onboarding_welcome_body">FocusGuard uses app usage access to calculate screen time. Display over other apps lets it show blocking screens for apps you choose, and is optional.</string>
     <string name="onboarding_how_it_works_title">How it works</string>
     <string name="onboarding_how_it_works_body">You tell us which apps tend to distract you. Our AI watches for habits like late-night scrolling or long binge sessions, and quietly intervenes when needed.</string>
     <string name="onboarding_permissions_title">Two quick permissions</string>
@@ -214,4 +214,23 @@
     <string name="error_generic">Something went wrong. Please try again.</string>
     <string name="content_desc_app_icon">App icon for %1$s</string>
 
+    <string name="tracking_start">Start tracking</string>
+    <string name="tracking_stop">Stop tracking</string>
+    <string name="tracking_explanation">FocusGuard reads which app is open to count screen time while tracking is on. It saves app names and session details only for enabled Focus Breakers. Tracking runs until you stop it, including after a reboot. Usage is stored on this device.</string>
+    <string name="tracking_paused_body">Start tracking when you are ready to monitor screen time.</string>
+    <string name="tracking_active_body">FocusGuard is monitoring screen time on this device.</string>
+    <string name="tracking_no_usage">No recorded usage</string>
+    <string name="tracking_no_score">—</string>
+    <string name="tracking_duration">%1$dh %2$02dm</string>
+    <string name="tracking_privacy">Privacy policy</string>
+    <string name="tracking_privacy_body">When tracking is on, FocusGuard reads app usage to calculate screen time. App names and detailed session history are saved for enabled Focus Breakers. FocusGuard processes usage locally and excludes usage history and preferences from Android backup and device transfer. To delete history and Focus Breakers, use Clear all my data in Settings.</string>
+    <string name="tracking_select_empty">No other launchable apps are available.</string>
+    <string name="tracking_goal_title">Screen time goal</string>
+    <string name="tracking_goal_body">You are close to your daily screen time goal.</string>
+    <string name="tracking_summary">Recorded screen time for %1$s was %2$dh %3$02dm.</string>
+    <string name="tracking_profiles">FocusGuard uses app usage access to calculate screen time. Display over other apps lets it show blocking screens for apps you choose, and is optional.</string>
+    <string name="tracking_permissions">Give FocusGuard usage access to start tracking.</string>
+    <string name="tracking_save_error">FocusGuard could not start tracking. Check your permissions and try again.</string>
+    <string name="tracking_clear_error">Could not clear stored data. Please try again.</string>
+    <string name="tracking_clear_done">FocusGuard data cleared.</string>
 </resources>

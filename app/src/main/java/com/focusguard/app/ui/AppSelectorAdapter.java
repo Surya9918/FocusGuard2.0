@@ -45,7 +45,15 @@ public class AppSelectorAdapter extends ListAdapter<TrackedApp, AppSelectorAdapt
 
         void bind(TrackedApp app) {
             binding.tvAppName.setText(app.appName);
+            binding.switchMonitored.setOnCheckedChangeListener(null);
             binding.switchMonitored.setChecked(app.isMonitored);
+            binding.chipRiskLevel.setVisibility(android.view.View.GONE);
+            try {
+                binding.imgAppIcon.setImageDrawable(binding.getRoot().getContext().getPackageManager()
+                        .getApplicationIcon(app.packageName));
+            } catch (android.content.pm.PackageManager.NameNotFoundException ignored) {
+                binding.imgAppIcon.setImageResource(com.focusguard.app.R.drawable.ic_app_placeholder);
+            }
             
             binding.switchMonitored.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 onMonitoredToggled.accept(app.packageName, isChecked);
@@ -63,7 +71,7 @@ public class AppSelectorAdapter extends ListAdapter<TrackedApp, AppSelectorAdapt
                 @Override
                 public boolean areContentsTheSame(@NonNull TrackedApp oldItem, @NonNull TrackedApp newItem) {
                     return oldItem.isMonitored == newItem.isMonitored &&
-                            oldItem.appName.equals(newItem.appName);
+                            java.util.Objects.equals(oldItem.appName, newItem.appName);
                 }
             };
 }
